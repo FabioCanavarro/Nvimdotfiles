@@ -1,0 +1,1 @@
+{"primary_source":{"id":"pkg:pypi\/pylama@8.4.1?extra=all","type":"registry+v1"},"name":"pylama","links":{"share":{},"opt":{},"bin":{"pylama.cmd":"venv\\Scripts\\pylama.exe"}},"metrics":{"completion_time":1730978791806,"start_time":1730978728325},"secondary_sources":[],"schema_version":"1.1"}

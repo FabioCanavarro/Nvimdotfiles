@@ -1,0 +1,1 @@
+ERR 2024-11-08T18:07:44.286 nvim.27588.0 chan_close_with_error:561: RPC: ch 1: stream write failed. RPC canceled; closing channel

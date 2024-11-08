@@ -1,0 +1,5 @@
+[console_scripts]
+pyink = pyink:patched_main
+
+[validate_pyproject.tool_schema]
+pyink = pyink.schema:get_schema

@@ -1,0 +1,1 @@
+{"primary_source":{"id":"pkg:pypi\/pydocstyle@6.3.0?extra=toml","type":"registry+v1"},"name":"pydocstyle","links":{"share":{},"opt":{},"bin":{"pydocstyle.cmd":"venv\\Scripts\\pydocstyle.exe"}},"metrics":{"completion_time":1730978749441,"start_time":1730978730476},"secondary_sources":[],"schema_version":"1.1"}

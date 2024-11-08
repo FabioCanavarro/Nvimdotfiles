@@ -1,0 +1,3 @@
+[console_scripts]
+pflake8=pflake8.__main__:main
+

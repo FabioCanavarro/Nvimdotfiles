@@ -1,0 +1,1 @@
+{"primary_source":{"id":"pkg:npm\/prettier@3.3.3","type":"registry+v1"},"name":"prettier","links":{"share":{},"opt":{},"bin":{"prettier.cmd":"node_modules\\.bin\\prettier.cmd"}},"metrics":{"completion_time":1730978726379,"start_time":1730978722640},"secondary_sources":[],"schema_version":"1.1"}

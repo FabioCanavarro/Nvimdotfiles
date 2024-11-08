@@ -1,0 +1,1 @@
+{"primary_source":{"id":"pkg:pypi\/ruff-lsp@0.0.58","type":"registry+v1"},"name":"ruff-lsp","links":{"share":{},"opt":{},"bin":{"ruff-lsp.cmd":"venv\\Scripts\\ruff-lsp.exe"}},"metrics":{"completion_time":1730978766765,"start_time":1730978749447},"secondary_sources":[],"schema_version":"1.1"}
