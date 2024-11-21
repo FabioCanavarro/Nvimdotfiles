@@ -1,1 +1,0 @@
-{"primary_source":{"id":"pkg:github\/rust-lang\/rustfmt@v1.5.1","type":"registry+v1"},"name":"rustfmt","links":{"share":{},"opt":{},"bin":{"rustfmt.cmd":"rustfmt_windows-x86_64-msvc_v1.5.1\/rustfmt.exe"}},"metrics":{"completion_time":1730978776579,"start_time":1730978756802},"secondary_sources":[],"schema_version":"1.1"}

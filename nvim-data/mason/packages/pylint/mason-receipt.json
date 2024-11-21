@@ -1,1 +1,0 @@
-{"primary_source":{"id":"pkg:pypi\/pylint@3.3.1","type":"registry+v1"},"name":"pylint","links":{"share":{},"opt":{},"bin":{"pylint.cmd":"venv\\Scripts\\pylint.exe"}},"metrics":{"completion_time":1730978761212,"start_time":1730978740354},"secondary_sources":[],"schema_version":"1.1"}

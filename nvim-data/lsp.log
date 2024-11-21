@@ -1,2 +1,0 @@
-[START][2024-11-07 23:27:54] LSP logging initiated
-[ERROR][2024-11-07 23:27:54] ...lsp/handlers.lua:623	'File or directory "\\<default workspace root>" does not exist.'
