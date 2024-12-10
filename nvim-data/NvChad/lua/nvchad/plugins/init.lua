@@ -1,4 +1,5 @@
 return {
+  
   "nvim-lua/plenary.nvim",
 
   {
@@ -111,7 +112,10 @@ return {
         opts = { history = true, updateevents = "TextChanged,TextChangedI" },
         config = function(_, opts)
           require("luasnip").config.set_config(opts)
+          require'lspconfig'.pyright.setup{}
           require "nvchad.configs.luasnip"
+          require'lspconfig'.basedpyright.setup{}
+
         end,
       },
 
@@ -345,6 +349,26 @@ opts = function()
         require('crates').setup()
     end,
 },
+    { "meznaric/key-analyzer.nvim", opts = {} },
+{ 'glacambre/firenvim', build = ":call firenvim#install(0)" },
+  {"kmontocam/nvim-conda",
+	dependencies = { "nvim-lua/plenary.nvim"},
+  lazy=false},
+  {
+  "NeogitOrg/neogit",
+  dependencies = {
+    "nvim-lua/plenary.nvim",         -- required
+    "sindrets/diffview.nvim",        -- optional - Diff integration
+
+    -- Only one of these is needed.
+    "nvim-telescope/telescope.nvim", -- optional
+    "ibhagwan/fzf-lua",              -- optional
+    "echasnovski/mini.pick",         -- optional
+  },
+  config = true,
+  lazy=false
+}
+
 }
 
 
