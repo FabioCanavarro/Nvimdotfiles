@@ -1,22 +1,37 @@
--- Neovide Config
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Neovim config
 if vim.g.neovide then
-  vim.o.guifont = "Hack Nerd Font:h11" -- text below applies for VimScript
-  -- Helper function for transparency formatting
-  local alpha = function()
-    return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
-  end
-  -- g:neovide_transparency should be 0 if you want to unify transparency of content and title bar.
-  vim.g.neovide_transparency = 0.85
-  vim.g.transparency = 0.85
-  vim.g.neovide_background_color = "#0f1117" .. alpha()
-  vim.g.neovide_floating_blur_amount_x = 2.0
-  vim.g.neovide_floating_blur_amount_y = 2.0
-  vim.g.neovide_refresh_rate = 240
-  vim.g.neovide_confirm_quit = true
-  vim.g.neovide_fullscreen = true
-  vim.g.neovide_cursor_antialiasing = true
-  vim.g.neovide_cursor_animate_in_insert_mode = true
-  vim.g.neovide_cursor_vfx_mode = "pixiedust"
+    vim.o.guifont = "Hack Nerd Font:h11" -- text below applies for VimScript
+    -- Helper function for transparency formatting
+    local alpha = function()
+      return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
+    end
+    -- g:neovide_transparency should be 0 if you want to unify transparency of content and title bar.
+    vim.g.neovide_transparency = 0.85
+    vim.g.transparency = 0.85
+    vim.g.neovide_background_color = "#0f1117" .. alpha()
+    vim.g.neovide_floating_blur_amount_x = 2.0
+    vim.g.neovide_floating_blur_amount_y = 2.0
+    vim.g.neovide_refresh_rate = 240
+    vim.g.neovide_confirm_quit = true
+    vim.g.neovide_fullscreen = true
+    vim.g.neovide_cursor_antialiasing = true
+    vim.g.neovide_cursor_animate_in_insert_mode = true
+    vim.g.neovide_cursor_vfx_mode = "pixiedust"
 end
 
 
@@ -32,8 +47,8 @@ vim.g.mapleader = " "
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
 if not vim.uv.fs_stat(lazypath) then
-  local repo = "https://github.com/folke/lazy.nvim.git"
-  vim.fn.system { "git", "clone", "--filter=blob:none", repo, "--branch=stable", lazypath }
+local repo = "https://github.com/folke/lazy.nvim.git"
+vim.fn.system { "git", "clone", "--filter=blob:none", repo, "--branch=stable", lazypath }
 end
 
 vim.opt.rtp:prepend(lazypath)
@@ -42,14 +57,14 @@ local lazy_config = require "configs.lazy"
 
 -- load plugins
 require("lazy").setup({
-  {
+{
     "NvChad/NvChad",
     lazy = false,
     branch = "v2.5",
     import = "nvchad.plugins",
-  },
+},
 
-  { import = "plugins" },
+{ import = "plugins" },
 }, lazy_config)
 
 -- load theme
@@ -63,7 +78,7 @@ local vim = vim
 local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
-  Plug('andweeb/presence.nvim')
+Plug('andweeb/presence.nvim')
 vim.call('plug#end')
 -- The setup config table shows all available config options with their default values:
 require("presence").setup({
@@ -103,12 +118,12 @@ vim.cmd("PlugUpdate")
 vim.cmd("q!")
 
 require("aerial").setup({
-  -- optionally use on_attach to set keymaps when aerial has attached to a buffer
-  on_attach = function(bufnr)
+-- optionally use on_attach to set keymaps when aerial has attached to a buffer
+on_attach = function(bufnr)
     -- Jump forwards/backwards with '{' and '}'
     vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
     vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
-  end,
+end,
 })
 -- You probably also want to set a keymap to toggle aerial
 vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
@@ -118,7 +133,7 @@ require("autosave").setup({
     disable_inside_paths = {}, -- A list of paths inside which autosave should be disabled. In Neovim, it is recommended to set this to {vim.fn.stdpath('config')} to disable autosave for files inside your Neovim configuration directory, so that Neovim doesn't reload whenever you type inside your configuration files.
 })
 vim.schedule(function()
-  require "mappings"
+require "mappings"
 end)
 vim.cmd("CondaActivate basev2")
 vim.opt.shell = 'pwsh'
@@ -126,4 +141,7 @@ vim.opt.shellcmdflag = '-nologo -noprofile -ExecutionPolicy RemoteSigned -comman
 vim.opt.shellxquote = ''
 local neogit = require('neogit')
 neogit.setup {}
-
+require("autosave").setup({
+    enabled = true, -- Enable autosave when the plugin is loaded. Set to false to disable autosave, and only enable it when you run the :AutoSave toggle command.
+    disable_inside_paths = {"./init.lua","../nvim-data/lazy/NvChad/lua/nvchad/plugins","../nvim-data/lazy/NvChad/lua/"}, -- A list of paths inside which autosave should be disabled. In Neovim, it is recommended to set this to {vim.fn.stdpath('config')} to disable autosave for files inside your Neovim configuration directory, so that Neovim doesn't reload whenever you type inside your configuration files.
+})
