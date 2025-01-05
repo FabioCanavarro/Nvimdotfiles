@@ -46,15 +46,14 @@ local options = {
   },
 
   sources = {
+    { name = "copilot" },
     { name = "nvim_lsp" },
     { name = "luasnip" },
     { name = "buffer" },
     { name = "nvim_lua" },
     { name = "path" },
   },
- 
   -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-  
   require('lspconfig')['pyright'].setup {
     capabilities =  require('cmp_nvim_lsp').default_capabilities()
   },require'lspconfig'.basedpyright.setup{},

@@ -117,16 +117,6 @@ vim.cmd("NvimTreeResize 20")
 vim.cmd("PlugUpdate")
 vim.cmd("q!")
 
-require("aerial").setup({
--- optionally use on_attach to set keymaps when aerial has attached to a buffer
-on_attach = function(bufnr)
-    -- Jump forwards/backwards with '{' and '}'
-    vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-    vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
-end,
-})
--- You probably also want to set a keymap to toggle aerial
-vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
 vim.cmd("Autosave on")
 require("autosave").setup({
     enabled = true, -- Enable autosave when the plugin is loaded. Set to false to disable autosave, and only enable it when you run the :AutoSave toggle command.
@@ -145,3 +135,55 @@ require("autosave").setup({
     enabled = true, -- Enable autosave when the plugin is loaded. Set to false to disable autosave, and only enable it when you run the :AutoSave toggle command.
     disable_inside_paths = {"./init.lua","../nvim-data/lazy/NvChad/lua/nvchad/plugins","../nvim-data/lazy/NvChad/lua/"}, -- A list of paths inside which autosave should be disabled. In Neovim, it is recommended to set this to {vim.fn.stdpath('config')} to disable autosave for files inside your Neovim configuration directory, so that Neovim doesn't reload whenever you type inside your configuration files.
 })
+
+vim.g.rustaceanvim = {
+  -- Plugin configuration
+  tools = {
+  },
+  -- LSP configuration
+  server = {
+    on_attach = function(client, bufnr)
+      -- you can also put keymaps in here
+    end,
+    default_settings = {
+      -- rust-analyzer language server configuration
+      ['rust-analyzer'] = {
+      },
+    },
+  },
+  -- DAP configuration
+  dap = {
+  },
+}
+
+require("hardtime").setup()
+
+vim.wo.relativenumber = true
+
+require("precognition").toggle()
+vim.cmd("Precognition show")
+
+require("global-note").setup({
+  filename = "global.md",
+  directory = "~/notes/",
+
+  additional_presets = {
+    projects = {
+      filename = "projects-to-do.md",
+      title = "List of projects",
+      command_name = "ProjectsNote",
+    },
+    todo = {
+      filename = "todo.md",
+      title = "To Do",
+      command_name = "Todo",
+    }
+  },
+})
+
+require("time-tracker").setup({
+  data_file = vim.fn.stdpath("data") .. "/time-tracker.db",
+  tracking_events = { "BufEnter", "BufWinEnter", "CursorMoved", "CursorMovedI", "WinScrolled" },
+  tracking_timeout_seconds = 5 * 60, -- 5 minutes
+})
+

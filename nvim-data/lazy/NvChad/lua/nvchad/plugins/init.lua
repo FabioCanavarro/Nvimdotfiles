@@ -1,5 +1,18 @@
-return {
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+--plugins
+return{
   "nvim-lua/plenary.nvim",
 
   {
@@ -20,6 +33,8 @@ return {
   "nvzone/volt",
   "nvzone/menu",
   { "nvzone/minty", cmd = { "Huefy", "Shades" } },
+{ "nvzone/showkeys", cmd = "ShowkeysToggle" },
+
 
   {
     "nvim-tree/nvim-web-devicons",
@@ -142,6 +157,7 @@ return {
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-path",
+        "zbirenbaum/copilot-cmp"
       },
     },
     opts = function()
@@ -198,16 +214,7 @@ opts = function()
     "rcarriga/nvim-notify",
     }
 },
-{ 'echasnovski/mini.nvim', version = '*' },{
-  'stevearc/aerial.nvim',
-  opts = {},
-  -- Optional dependencies
-  dependencies = {
-     "nvim-treesitter/nvim-treesitter",
-     "nvim-tree/nvim-web-devicons"
-  },
-},
-
+{ 'echasnovski/mini.nvim', version = '*' },
 {
   'mrcjkb/rustaceanvim',
   version = '^5', -- Recommended
@@ -259,7 +266,6 @@ opts = function()
   },
 },
   'm-demare/hlargs.nvim',
-  { 'danilamihailov/beacon.nvim' },
 {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
@@ -296,7 +302,7 @@ opts = function()
   ---enables autocomplete for opts
   ---@module "auto-session"
   ---@type AutoSession.Config
-  opts = {
+  opts = {suppressed_dirs = {'/',"../../../../../../nvim/"},
     -- ⚠️ This will only work if Telescope.nvim is installed
     -- The following are already the default values, no need to provide them if these are already the settings you want.
     session_lens = {
@@ -349,8 +355,6 @@ opts = function()
         require('crates').setup()
     end,
 },
-    { "meznaric/key-analyzer.nvim", opts = {} },
-{ 'glacambre/firenvim', build = ":call firenvim#install(0)" },
   {"kmontocam/nvim-conda",
 	dependencies = { "nvim-lua/plenary.nvim"},
   lazy=false},
@@ -367,7 +371,104 @@ opts = function()
   },
   config = true,
   lazy=false
+},
+  {
+  "zbirenbaum/copilot.lua",
+  cmd = "Copilot",
+  event = "InsertEnter",
+  config = function()
+    require("copilot").setup({
+  panel = {
+    enabled = true,
+    auto_refresh = false,
+    keymap = {
+      jump_prev = "[[",
+      jump_next = "]]",
+      accept = "<CR>",
+      refresh = "gr",
+      open = "<M-CR>"
+    },
+    layout = {
+      position = "bottom", -- | top | left | right
+      ratio = 0.4
+    },
+  },
+  suggestion = {
+    enabled = true,
+    auto_trigger = true,
+    hide_during_completion = false,
+    debounce = 75,
+    keymap = {
+      accept = "<M-l>",
+      accept_word = false,
+      accept_line = false,
+      next = "<M-]>",
+      prev = "<M-[>",
+      dismiss = "<C-]>",
+    },
+  },
+  copilot_node_command = 'node', -- Node.js version must be > 18.x
+  server_opts_overrides = {},
+})
+  end,
+},{
+  'mfussenegger/nvim-dap'
+  },
+  -- lazy.nvim
+  {
+     "m4xshen/hardtime.nvim",
+     dependencies = { "MunifTanjim/nui.nvim" },
+     opts = {
+    showmode = false,
+    cmdheight =2,
+    }
+
+  },
+  {
+ "tris203/precognition.nvim",
+    --event = "VeryLazy",
+    opts = {
+    -- startVisible = true,
+    -- showBlankVirtLine = true,
+    -- highlightColor = { link = "Comment" },
+    -- hints = {
+    --      Caret = { text = "^", prio = 2 },
+    --      Dollar = { text = "$", prio = 1 },
+    --      MatchingPair = { text = "%", prio = 5 },
+    --      Zero = { text = "0", prio = 1 },
+    --      w = { text = "w", prio = 10 },
+    --      b = { text = "b", prio = 9 },
+    --      e = { text = "e", prio = 8 },
+    --      W = { text = "W", prio = 7 },
+    --      B = { text = "B", prio = 6 },
+    --      E = { text = "E", prio = 5 },
+    -- },
+    -- gutterHints = {
+    --     G = { text = "G", prio = 10 },
+    --     gg = { text = "gg", prio = 9 },
+    --     PrevParagraph = { text = "{", prio = 8 },
+    --     NextParagraph = { text = "}", prio = 8 },
+    -- },
+    -- disabled_fts = {
+    --     "startify",
+    -- },
+    },
+  },
+  {"LudoPinelli/comment-box.nvim", } ,
+  {"backdround/global-note.nvim"},
+  {'wakatime/vim-wakatime', lazy = false },
+  {
+    "3rd/time-tracker.nvim",
+    dependencies = {
+        "3rd/sqlite.nvim",
+    },
+    event = "VeryLazy",
+    opts = {
+        data_file = vim.fn.stdpath("data") .. "/time-tracker.db",
+    },
 }
+
+
 
 }
 
