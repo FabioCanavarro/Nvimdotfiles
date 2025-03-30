@@ -32,6 +32,10 @@ if vim.g.neovide then
     vim.g.neovide_cursor_antialiasing = true
     vim.g.neovide_cursor_animate_in_insert_mode = true
     vim.g.neovide_cursor_vfx_mode = "pixiedust"
+    vim.g.neovide_cursor_vfx_particle_density = 10.0
+    vim.g.neovide_hide_mouse_when_typing = true
+
+
 end
 
 
@@ -78,7 +82,7 @@ local vim = vim
 local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
-Plug('andweeb/presence.nvim')
+  Plug('andweeb/presence.nvim')
 vim.call('plug#end')
 -- The setup config table shows all available config options with their default values:
 require("presence").setup({
@@ -104,12 +108,14 @@ require("presence").setup({
     workspace_text      = "Working on %s",            -- Format string rendered when in a git repository (either string or function(project_name: string|nil, filename: string): string)
     line_number_text    = "Line %s out of %s",        -- Format string rendered when enable_line_number is set to true (either string or function(line_number: number, line_count: number): string)
 })
-
-
 require("autosave").setup({
     enabled = true, -- Enable autosave when the plugin is loaded. Set to false to disable autosave, and only enable it when you run the :AutoSave toggle command.
-    disable_inside_paths = {}, -- A list of paths inside which autosave should be disabled. In Neovim, it is recommended to set this to {vim.fn.stdpath('config')} to disable autosave for files inside your Neovim configuration directory, so that Neovim doesn't reload whenever you type inside your configuration files.
+    disable_inside_paths = {"./init.lua","../nvim-data/lazy/NvChad/lua/nvchad/plugins","../nvim-data/lazy/NvChad/lua/"}, -- A list of paths inside which autosave should be disabled. In Neovim, it is recommended to set this to {vim.fn.stdpath('config')} to disable autosave for files inside your Neovim configuration directory, so that Neovim doesn't reload whenever you type inside your configuration files.
 })
+vim.g.autosave_disable_inside_paths = {"./init.lua","../nvim-data/lazy/NvChad/lua/nvchad/plugins","../nvim-data/lazy/NvChad/lua/"}
+
+
+
 vim.loader.enable()
 vim.cmd("Autosave on")
 vim.cmd("NvimTreeToggle")
@@ -117,24 +123,17 @@ vim.cmd("NvimTreeResize 20")
 vim.cmd("PlugUpdate")
 vim.cmd("q!")
 
-vim.cmd("Autosave on")
-require("autosave").setup({
-    enabled = true, -- Enable autosave when the plugin is loaded. Set to false to disable autosave, and only enable it when you run the :AutoSave toggle command.
-    disable_inside_paths = {}, -- A list of paths inside which autosave should be disabled. In Neovim, it is recommended to set this to {vim.fn.stdpath('config')} to disable autosave for files inside your Neovim configuration directory, so that Neovim doesn't reload whenever you type inside your configuration files.
-})
 vim.schedule(function()
 require "mappings"
 end)
-vim.cmd("CondaActivate basev2")
 vim.opt.shell = 'pwsh'
 vim.opt.shellcmdflag = '-nologo -noprofile -ExecutionPolicy RemoteSigned -command'
 vim.opt.shellxquote = ''
 local neogit = require('neogit')
-neogit.setup {}
-require("autosave").setup({
-    enabled = true, -- Enable autosave when the plugin is loaded. Set to false to disable autosave, and only enable it when you run the :AutoSave toggle command.
-    disable_inside_paths = {"./init.lua","../nvim-data/lazy/NvChad/lua/nvchad/plugins","../nvim-data/lazy/NvChad/lua/"}, -- A list of paths inside which autosave should be disabled. In Neovim, it is recommended to set this to {vim.fn.stdpath('config')} to disable autosave for files inside your Neovim configuration directory, so that Neovim doesn't reload whenever you type inside your configuration files.
-})
+neogit.setup({})
+
+
+
 
 vim.g.rustaceanvim = {
   -- Plugin configuration
@@ -148,7 +147,7 @@ vim.g.rustaceanvim = {
     default_settings = {
       -- rust-analyzer language server configuration
       ['rust-analyzer'] = {
-      },
+    },
     },
   },
   -- DAP configuration
@@ -158,32 +157,54 @@ vim.g.rustaceanvim = {
 
 require("hardtime").setup()
 
-vim.wo.relativenumber = true
 
 require("precognition").toggle()
 vim.cmd("Precognition show")
-
-require("global-note").setup({
-  filename = "global.md",
-  directory = "~/notes/",
-
-  additional_presets = {
-    projects = {
-      filename = "projects-to-do.md",
-      title = "List of projects",
-      command_name = "ProjectsNote",
-    },
-    todo = {
-      filename = "todo.md",
-      title = "To Do",
-      command_name = "Todo",
-    }
-  },
-})
 
 require("time-tracker").setup({
   data_file = vim.fn.stdpath("data") .. "/time-tracker.db",
   tracking_events = { "BufEnter", "BufWinEnter", "CursorMoved", "CursorMovedI", "WinScrolled" },
   tracking_timeout_seconds = 5 * 60, -- 5 minutes
 })
+
+require("todo-comments").setup({})
+vim.wo.relativenumber = true
+
+require("tidy").setup({})
+
+require("hover").setup {
+    init = function()
+        -- Require providers
+        require("hover.providers.lsp")
+        require('hover.providers.gh')
+        -- require('hover.providers.gh_user')
+        -- require('hover.providers.jira')
+        -- require('hover.providers.dap')
+        require('hover.providers.fold_preview')
+        -- require('hover.providers.diagnostic')
+        -- require('hover.providers.man')
+        require('hover.providers.dictionary')
+    end,
+    preview_opts = {
+        border = 'single'
+    },
+    -- Whether the contents of a currently open hover window should be moved
+    -- to a :h preview-window when pressing the hover keymap.
+    preview_window = false,
+    title = true,
+    mouse_providers = {
+        'LSP'
+    },
+    mouse_delay = 1000
+}
+
+-- Setup keymaps
+vim.keymap.set("n", "K", require("hover").hover, {desc = "hover.nvim"})
+vim.keymap.set("n", "gK", require("hover").hover_select, {desc = "hover.nvim (select)"})
+vim.keymap.set("n", "<C-p>", function() require("hover").hover_switch("previous") end, {desc = "hover.nvim (previous source)"})
+vim.keymap.set("n", "<C-n>", function() require("hover").hover_switch("next") end, {desc = "hover.nvim (next source)"})
+
+-- Mouse support
+vim.keymap.set('n', '<MouseMove>', require('hover').hover_mouse, { desc = "hover.nvim (mouse)" })
+vim.o.mousemoveevent = true
 
