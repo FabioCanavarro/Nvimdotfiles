@@ -8,13 +8,10 @@
 
 
 
-
-
-
 -- Neovim config
 if vim.g.neovide then
     local alpha = function()
-      return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
+      return string.format("%x", math.floor((255 * vim.g.transparency) or 0.8))
     end
     vim.o.guifont = "FiraCode NF Retina:h11"
     vim.g.transparency = 0.85
@@ -30,7 +27,7 @@ if vim.g.neovide then
     vim.g.neovide_cursor_animate_in_insert_mode = true
     vim.g.neovide_cursor_vfx_mode = "pixiedust"
     vim.g.neovide_cursor_vfx_particle_density = 18
-    vim.g.neovide_cursor_trail_size = 0.8
+    vim.g.neovide_cursor_trail_size = 0.4
     vim.g.neovide_cursor_animation_length = 0.22
     vim.g.neovide_confirm_quit = true
     vim.g.neovide_hide_mouse_when_typing = true
@@ -38,7 +35,6 @@ if vim.g.neovide then
     vim.g.neovide_light_radius = 5
     vim.g.neovide_refresh_rate = 240
     vim.g.neovide_refresh_rate_idle = 5
-
 end
 
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
@@ -93,6 +89,7 @@ vim.cmd("q!")
 vim.schedule(function()
 require "mappings"
 end)
+
 vim.opt.shell = 'pwsh'
 vim.opt.shellcmdflag = '-nologo -noprofile -ExecutionPolicy RemoteSigned -command'
 vim.opt.shellxquote = ''
@@ -282,3 +279,14 @@ require('cord').setup {
     },
   },
 }
+
+require("neotest").setup({
+  adapters = {
+    require("neotest-rust") {
+        args = { "--no-capture" },
+    }
+  }
+})
+
+require("ferris").setup({})
+vim.cmd("ShowkeysToggle")
