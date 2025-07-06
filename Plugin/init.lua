@@ -427,4 +427,15 @@ opts = function()
     -- opts = {}
   },
   { "nvzone/showkeys", cmd = "ShowkeysToggle" },
+  {"rouge8/neotest"},
+  {"rouge8/neotest-rust"},
+  {
+      'vxpm/ferris.nvim',
+      opts = {
+        -- If true, will automatically create commands for each LSP method
+        create_commands = true, -- bool
+        -- Handler for URL's (used for opening documentation)
+        url_handler = "xdg-open", -- string | function(string)
+      }
+  },
 }
