@@ -10,11 +10,11 @@
 
 -- Neovim config
 if vim.g.neovide then
+    vim.g.transparency = 0.85
     local alpha = function()
       return string.format("%x", math.floor((255 * vim.g.transparency) or 0.8))
     end
     vim.o.guifont = "FiraCode NF Retina:h11"
-    vim.g.transparency = 0.85
     vim.g.neovide_opacity = 0.85
     vim.g.neovide_normal_opacity = 0.85
     vim.g.neovide_background_color = "#0f1117" .. alpha()
@@ -290,3 +290,115 @@ require("neotest").setup({
 
 require("ferris").setup({})
 vim.cmd("ShowkeysToggle")
+vim.lsp.inlay_hint.enable(true)
+vim.g.rustaceanvim = {
+  server = {
+    settings = {
+      ["rust-analyzer"] = {
+        inlayHints = {
+          -- ENABLED: Shows the inferred type for variables (e.g., `let x = 42;` shows `x: i32`).
+          typeHints = {
+            enable = true,
+            -- Whether to hide type hints for `let` statements that initialize to a closure.
+            hideClosureInitialization = false,
+            -- Whether to hide inlay type hints for constructors.
+            hideNamedConstructor = false,
+          },
+
+          -- ENABLED: Shows the return type of each step in a method chain.
+          chainingHints = {
+            enable = true,
+          },
+
+          -- ENABLED: Shows parameter names at the function call site (e.g., `my_fn(/*name:*/ "value")`).
+          parameterHints = {
+            enable = true,
+          },
+
+          -- ENABLED: Shows what a closing brace `}` belongs to for long blocks.
+          closingBraceHints = {
+            enable = true,
+            -- Minimum number of lines before the hint is shown.
+            minLines = 25,
+          },
+
+
+          ---------------------------------------------------
+          -- HINTS YOU HAVE DISABLED OR LEFT AS DEFAULT (OFF)
+          ---------------------------------------------------
+
+          -- DISABLED: Does not show inlay hints for binding modes like `ref` and `ref mut` in patterns.
+          bindingModeHints = {
+            enable = true,
+          },
+
+          -- DISABLED: Does not show the inferred return type of closures.
+          closureReturnTypeHints = {
+            enable = "always", -- Other options: "always", "with_block"
+          },
+
+          -- DISABLED: Does not show elided lifetimes (e.g., `'a`) in function signatures.
+          lifetimeElisionHints = {
+            enable = "always", -- Other options: "always", "skip_trivial"
+            useParameterNames = true,
+          },
+          -- DEFAULT (Off): Does not show how closures capture variables (e.g., by `&`, `&mut`, or `move`).
+          closureCaptureHints = {
+            enable = true,
+          },
+
+          -- DEFAULT (Off): Does not show enum variant discriminant values (e.g., `MyEnum::Variant = 0`).
+          discriminantHints = {
+            enable = "always", -- Other options: "always", "fieldless"
+          },
+
+          expressionAdjustmentHints = {
+            enable = "always", -- Other options: "always", "prefix", "postfix"
+            hideOutsideUnsafe = false,
+            mode = "prefix"
+          },
+
+          -- DEFAULT (Off): Does not show implicit `drop` calls.
+          implicitDrops = {
+            enable = true,
+          },
+          -- DEFAULT (Off): Does not show the implied `Sized` bound on generic parameters.
+          implicitSizedBoundHints = {
+            enable = false,
+          },
+
+          -- DEFAULT (Off): Does not show hints for generic type or lifetime parameter names at call sites.
+          -- Only `const` generic hints are enabled by default.
+          genericParameterHints = {
+            const = { enable = true }, -- Default is true
+            lifetime = { enable = true },
+            type = { enable = false },
+          },
+          ---------------------------------------------------
+          -- GENERAL HINT CONFIGURATION
+          ---------------------------------------------------
+
+          -- Sets the maximum length for any inlay hint.
+          maxLength = 25,
+
+          -- Whether to render colons for type hints (`: i32`) and parameter hints (`name:`).
+          renderColons = true,
+          -- Defines the notation style for closures in hints.
+          closureStyle = "impl_fn", -- Other option: "fn_trait"
+
+        },
+      },
+    },
+  },
+}
+
+vim.keymap.set('n', '<Leader>pi', function()
+  -- Toggle the global inlay hint setting
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+  -- Print a message to confirm the new state
+  if vim.lsp.inlay_hint.is_enabled() then
+    print("Inlay hints ENABLED")
+  else
+    print("Inlay hints DISABLED")
+  end
+end, { desc = 'Toggle Inlay Hints' })
