@@ -1,75 +1,29 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
---plugins
-return{
-  "nvim-lua/plenary.nvim",
-
+return {
   {
-    "nvchad/base46",
-    build = function()
-      require("base46").load_all_highlights()
-    end,
+    "stevearc/conform.nvim",
+    -- event = 'BufWritePre', -- uncomment for format on save
+    opts = require "configs.conform",
   },
 
+  -- These are some examples, uncomment them if you want to see them work!
   {
-    "nvchad/ui",
-    lazy = false,
+    "neovim/nvim-lspconfig",
     config = function()
-      require "nvchad"
+      require "configs.lspconfig"
     end,
   },
 
-  "nvzone/volt",
-  "nvzone/menu",
-  { "nvzone/minty", cmd = { "Huefy", "Shades" } },
+  -- {
+  -- 	"nvim-treesitter/nvim-treesitter",
+  -- 	opts = {
+  -- 		ensure_installed = {
+  -- 			"vim", "lua", "vimdoc",
+  --      "html", "css"
+  -- 		},
+  -- 	},
+  -- },
 
-
-  {
-    "nvim-tree/nvim-web-devicons",
-    opts = function()
-      dofile(vim.g.base46_cache .. "devicons")
-      return { override = require "nvchad.icons.devicons" }
-    end,
-  },
-
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    event = "User FilePost",
-    opts = {
-      indent = { char = "│", highlight = "IblChar" },
-      scope = { char = "│", highlight = "IblScopeChar" },
-    },
-    config = function(_, opts)
-      dofile(vim.g.base46_cache .. "blankline")
-
-      local hooks = require "ibl.hooks"
-      hooks.register(hooks.type.WHITESPACE, hooks.builtin.hide_first_space_indent_level)
-      require("ibl").setup(opts)
-
-      dofile(vim.g.base46_cache .. "blankline")
-    end,
-  },
-
-  -- file managing , picker etc
-  {
-    "nvim-tree/nvim-tree.lua",
-    cmd = { "NvimTreeToggle", "NvimTreeFocus" },
-    opts = function()
-     return require "nvchad.configs.nvimtree"
-    end,
-  },
-
+  { 'vuciv/golf' },
   {
     "folke/which-key.nvim",
     keys = { "<leader>", "<c-w>", '"', "'", "`", "c", "v", "g","<C>" },
@@ -79,113 +33,7 @@ return{
       return {}
     end,
   },
-
-  -- formatting!
   {
-    "stevearc/conform.nvim",
-    opts = {
-      formatters_by_ft = { lua = { "stylua" } },
-    },
-  },
-
-  -- git stuff
-  {
-    "lewis6991/gitsigns.nvim",
-    event = "User FilePost",
-    opts = function()
-      return require "nvchad.configs.gitsigns"
-    end,
-  },
-
-  -- lsp stuff
-  {
-    "williamboman/mason.nvim",
-    cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUpdate" },
-    opts = function()
-      return require "nvchad.configs.mason"
-    end,
-  },
-
-  {
-    "neovim/nvim-lspconfig",
-    event = "User FilePost",
-    config = function()
-      require("nvchad.configs.lspconfig").defaults()
-    end,
-  },
-
-  -- load luasnips + cmp related in insert mode only
-  {
-    "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
-    dependencies = {
-      {
-        -- snippet plugin
-        "L3MON4D3/LuaSnip",
-        dependencies = "rafamadriz/friendly-snippets",
-        opts = { history = true, updateevents = "TextChanged,TextChangedI" },
-        config = function(_, opts)
-          require("luasnip").config.set_config(opts)
-          require'lspconfig'.pyright.setup{}
-          require "nvchad.configs.luasnip"
-          require'lspconfig'.basedpyright.setup{}
-          require"lspconfig".clangd.setup{}
-        end,
-      },
-
-      -- autopairing of (){}[] etc
-      {
-        "windwp/nvim-autopairs",
-        opts = {
-          fast_wrap = {},
-          disable_filetype = { "TelescopePrompt", "vim" },
-        },
-        config = function(_, opts)
-          require("nvim-autopairs").setup(opts)
-
-          -- setup cmp for autopairs
-          local cmp_autopairs = require "nvim-autopairs.completion.cmp"
-          require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
-        end,
-      },
-
-      -- cmp sources plugins
-      {
-        "saadparwaiz1/cmp_luasnip",
-        "hrsh7th/cmp-nvim-lua",
-        "hrsh7th/cmp-nvim-lsp",
-        "hrsh7th/cmp-buffer",
-        "hrsh7th/cmp-path",
-        "zbirenbaum/copilot-cmp"
-      },
-    },
-    opts = function()
-      return require "nvchad.configs.cmp"
-    end,
-  },
-
-  {
-    "nvim-telescope/telescope.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    cmd = "Telescope",
-    opts = function()
-      return require "nvchad.configs.telescope"
-    end,
-  },
-
-  {
-    "nvim-treesitter/nvim-treesitter",
-    event = { "BufReadPost", "BufNewFile" },
-    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
-    build = ":TSUpdate",
-opts = function()
-      return require "nvchad.configs.treesitter"
-    end,
-    config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
-    end,
-  },
-{
   "folke/noice.nvim",
   event = "VeryLazy",
   opts = {
@@ -226,7 +74,36 @@ opts = function()
     -- or leave it empty to use the default settings
     -- refer to the configuration section below
   }
-},
+}, 
+  {
+    "nvim-treesitter/nvim-treesitter",
+    event = { "BufReadPost", "BufNewFile" },
+    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+    build = ":TSUpdate",
+    opts = function()
+      pcall(function()
+        dofile(vim.g.base46_cache .. "syntax")
+        dofile(vim.g.base46_cache .. "treesitter")
+      end)
+
+      return {
+        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc","rust", "toml" },
+        auto_install = true,
+        rainbow = {
+          enable = true,
+          extended_mode = true,
+          max_file_lines = nil,
+        },
+
+        highlight = {
+          enable = true,
+          use_languagetree = true,
+        },
+
+        indent = { enable = true },
+      }
+    end,
+  },
   {
   "folke/trouble.nvim",
   opts = {}, -- for default options, refer to the configuration section for custom setup.
@@ -354,7 +231,7 @@ opts = function()
 	dependencies = { "nvim-lua/plenary.nvim"},
   lazy=false,
   {
-  'mfussenegger/nvim-dap'
+    'mfussenegger/nvim-dap'
   },
   -- lazy.nvim
   {
@@ -419,23 +296,31 @@ opts = function()
     end
   },
   {
-    "lewis6991/hover.nvim",
-  },
-  {
     'vyfor/cord.nvim',
     build = ':Cord update',
     -- opts = {}
   },
   { "nvzone/showkeys", cmd = "ShowkeysToggle" },
-  {"rouge8/neotest"},
-  {"rouge8/neotest-rust"},
   {
-      'vxpm/ferris.nvim',
-      opts = {
-        -- If true, will automatically create commands for each LSP method
-        create_commands = true, -- bool
-        -- Handler for URL's (used for opening documentation)
-        url_handler = "xdg-open", -- string | function(string)
-      }
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter"
+    }
   },
+   {
+    "alex-popov-tech/store.nvim",
+    dependencies = {
+      "OXY2DEV/markview.nvim", -- optional, for pretty readme preview / help window
+    },
+    cmd = "Store",
+    keys = {
+      { "<leader>s", "<cmd>Store<cr>", desc = "Open Plugin Store" },
+    },
+    opts = {
+      -- optional configuration here
+    },
+  }
 }
