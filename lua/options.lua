@@ -13,8 +13,8 @@ if vim.g.neovide then
       return string.format("%x", math.floor((255 * vim.g.transparency) or 0.8))
     end
     vim.o.guifont = "FiraCode NF Retina:h11"
-    vim.g.neovide_opacity = 0.55
-    vim.g.neovide_normal_opacity = 0.3
+    vim.g.neovide_opacity = 0.8
+    vim.g.neovide_normal_opacity = 0.8
     vim.g.neovide_background_color = "#0f1117" .. alpha()
     vim.g.neovide_fullscreen = true
     vim.g.neovide_floating_blur_amount_x = 1.0
@@ -38,6 +38,7 @@ end
 vim.opt.shell = 'pwsh'
 vim.opt.shellcmdflag = '-nologo -noprofile -ExecutionPolicy RemoteSigned -command'
 vim.opt.shellxquote = ''
+vim.o.mousemoveevent = false
 
 vim.lsp.inlay_hint.enable(true)
 

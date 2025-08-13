@@ -56,8 +56,6 @@ require("time-tracker").setup({
 
 require("todo-comments").setup({})
 
-require("tidy").setup({})
-
 require("lspconfig").basedpyright.setup {
   settings = {
     basedpyright = {

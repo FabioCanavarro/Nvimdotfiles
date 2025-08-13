@@ -15,8 +15,3 @@ vim.keymap.set(
   end,
   { silent = true, buffer = bufnr }
 )
-
-vim.keymap.set("n", "Ke", vim.cmd.RustLsp('explainError'), { silent = true, buffer = bufnr })
-vim.keymap.set("n", "Kr", vim.cmd.RustLsp({ 'renderDiagnostic'}), { silent = true, buffer = bufnr })
-vim.keymap.set("n", "Kj", vim.cmd.RustLsp({ 'relatedDiagnostic'}), { silent = true, buffer = bufnr })
-
