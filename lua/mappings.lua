@@ -27,3 +27,16 @@ map('n', '<Leader>pi', function()
 end, { desc = 'Toggle Inlay Hints' })
 
 
+if vim.g.neovide then
+
+  map('n', '<Leader>pf', function()
+  if vim.g.neovide_fullscreen then
+    vim.g.neovide_fullscreen = false
+    print("FullScreen DISABLED")
+  else
+    vim.g.neovide_fullscreen = true
+    print("FullScreen ENABLED")
+  end
+end, { desc = 'Toggle FullScreen' })
+
+end
