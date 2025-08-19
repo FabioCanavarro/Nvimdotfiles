@@ -221,8 +221,11 @@ return {
       relative = 'win', -- What will be the minimap be placed relative to, "win": the current window, "editor": the entire editor
       events = { 'TextChanged', 'InsertLeave', 'DiagnosticChanged', 'FileWritePost' }})
       codewindow.apply_default_keybinds()
-  end}, {
+  end
+  }, 
+  {
     'saecki/crates.nvim',
+    event = "BufRead Cargo.toml",
     tag = 'stable',
     config = function()
         require('crates').setup()
@@ -311,5 +314,24 @@ return {
     opts = {
       -- optional configuration here
     },
-  }
+  },
+{
+  "hrsh7th/nvim-cmp",
+  -- override the options
+  opts = function(_, opts)
+    local cmp = require("cmp")
+    local luasnip = require("luasnip")
+
+    -- The new, intelligent mapping for the <Tab> key
+    opts.mapping["<Tab>"] = function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end
+
+    return opts
+  end,
+},
 }

@@ -12,7 +12,6 @@ if vim.g.neovide then
     local alpha = function()
       return string.format("%x", math.floor((255 * vim.g.transparency) or 0.8))
     end
-    vim.o.guifont = "FiraCode NF Retina:h11"
     vim.g.neovide_opacity = 0.8
     vim.g.neovide_normal_opacity = 0.8
     vim.g.neovide_background_color = "#0f1117" .. alpha()
@@ -33,15 +32,8 @@ if vim.g.neovide then
     vim.g.neovide_refresh_rate = 240
 end
 
-
-vim.opt.shell = 'pwsh'
-vim.opt.shellcmdflag = '-nologo -noprofile -ExecutionPolicy RemoteSigned -command'
-vim.opt.shellxquote = ''
 vim.o.mousemoveevent = false
-
 vim.lsp.inlay_hint.enable(true)
-
-
 vim.g.autosave_disable_inside_paths = {"./init.lua","../nvim-data/lazy/NvChad/lua/nvchad/plugins","../nvim-data/lazy/NvChad/lua/"}
 
 vim.g.rustaceanvim = function()
