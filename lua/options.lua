@@ -5,6 +5,8 @@ require "nvchad.options"
 -- local o = vim.o
 -- o.cursorlineopt ='both' -- to enable cursorline!
 
+local is_windows = vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 or vim.fn.has("win16") == 1
+
 vim.o.relativenumber = true
 
 if vim.g.neovide then
@@ -14,6 +16,10 @@ if vim.g.neovide then
     end
     vim.g.neovide_opacity = 0.8
     vim.g.neovide_normal_opacity = 0.8
+    if is_windows then
+      vim.o.guifont = "FiraCode NF Retina:h11"
+      vim.g.neovide_fullscreen = true
+    end
     vim.g.neovide_background_color = "#0f1117" .. alpha()
     vim.g.neovide_floating_blur_amount_x = 1.0
     vim.g.neovide_floating_blur_amount_y = 1.0
@@ -30,6 +36,12 @@ if vim.g.neovide then
     vim.g.neovide_light_angle_degrees = 45
     vim.g.neovide_light_radius = 5
     vim.g.neovide_refresh_rate = 240
+end
+
+if is_windows then
+  vim.opt.shell = 'D:/Fabio/Tools/Git/usr/bin/zsh.exe'
+  vim.opt.shellcmdflag = ' -il -c'
+  vim.opt.shellredir = '>%s 2>&1'
 end
 
 vim.o.mousemoveevent = false
