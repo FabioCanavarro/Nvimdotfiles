@@ -3,6 +3,8 @@ require "nvchad.mappings"
 -- add yours here
 
 local map = vim.keymap.set
+local dap = require("dap")
+local dapui = require("dapui")
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
@@ -59,3 +61,29 @@ end, {desc = "Open context menu"})
 vim.keymap.set("n", "<Leader>h", function()
   vim.cmd "FloatermToggle"
 end, { desc = "FloatermToggle" })
+
+vim.keymap.set("n", "<A-h>", function()
+  vim.cmd "FloatermToggle"
+end, { desc = "FloatermToggle" })
+
+-- Debuggers
+vim.keymap.set("n", "<Leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
+vim.keymap.set("n", "<Leader>dc", dap.continue, { desc = "Continue" })
+vim.keymap.set("n", "<Leader>do", dap.step_over, { desc = "Step Over" })
+vim.keymap.set("n", "<Leader>di", dap.step_into, { desc = "Step Into" })
+vim.keymap.set("n", "<Leader>du", dap.step_out, { desc = "Step Out" })
+vim.keymap.set("n", "<Leader>dr", dap.repl.open, { desc = "Open REPL" })
+vim.keymap.set("n", "<Leader>dt", dap.terminate, { desc = "Terminate Session" })
+vim.keymap.set("n", "<Leader>dui", dapui.toggle, { desc = "Toggle DAP UI" })
+
+vim.keymap.set("n", "<Leader>dB", function()
+  require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+end, { desc = "Set Conditional Breakpoint" })
+
+vim.keymap.set("n", "<Leader>dd", function()
+  vim.cmd.RustLsp('debuggables')
+end, { desc = "Debug Rust Target" })
+
+vim.keymap.set("n", "<Leader>dC", function()
+  vim.cmd.RustLsp('debuggables!')
+end, { desc = "Continue (Rerun) Last Debug" })

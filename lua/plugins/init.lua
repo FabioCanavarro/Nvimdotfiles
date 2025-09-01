@@ -72,6 +72,7 @@ return {
     "mrcjkb/rustaceanvim",
     version = "^5", -- Recommended
     lazy = false, -- This plugin is already lazy
+    ft = { "rust" },
   },
   {
     "folke/todo-comments.nvim",
@@ -247,6 +248,46 @@ return {
   lazy = false,
   {
     "mfussenegger/nvim-dap",
+    dependencies = {
+      -- Installs the debug adapters for you
+      {
+        "jay-babu/mason-nvim-dap.nvim",
+        config = function()
+          require("mason-nvim-dap").setup({
+            ensure_installed = { "codelldb" }, -- Automatically installs codelldb
+          })
+        end,
+      },
+      -- Recommended UI for a better debugging experience
+      "rcarriga/nvim-dap-ui",
+    },
+    config = function()
+      vim.api.nvim_set_hl(0, 'DapBreakpoint', { ctermbg=0, guifg='#993939', guibg='#31353f' })
+      vim.api.nvim_set_hl(0, 'DapLogPoint', { ctermbg=0, guifg='#61afef', guibg='#31353f' })
+      vim.api.nvim_set_hl(0, 'DapStopped', { ctermbg=0, guifg='#98c379', guibg='#31353f' })
+
+      vim.fn.sign_define('DapBreakpoint', { text='', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
+      vim.fn.sign_define('DapBreakpointCondition', { text='ﳁ', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
+      vim.fn.sign_define('DapBreakpointRejected', { text='', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl= 'DapBreakpoint' })
+      vim.fn.sign_define('DapLogPoint', { text='', texthl='DapLogPoint', linehl='DapLogPoint', numhl= 'DapLogPoint' })
+      vim.fn.sign_define('DapStopped', { text='', texthl='DapStopped', linehl='DapStopped', numhl= 'DapStopped' })
+
+      local dap = require("dap")
+      local dapui = require("dapui")
+
+      dapui.setup()
+
+      -- Automatically open/close dap-ui when a debug session starts/ends
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+      end
+    end,
   },
   -- lazy.nvim
   {

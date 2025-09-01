@@ -223,7 +223,7 @@ require("key-analyzer").setup({
     promotion = false,
 })
 
-require("floatterm").setup( {
+require("floaterm").setup( {
     border = false,
     size = { h = 60, w = 70 },
 
