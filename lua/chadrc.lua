@@ -6,12 +6,26 @@
 local M = {}
 
 M.base46 = {
-	theme = "chadracula-evondev",
-  
+	theme = "tundra",
+  theme_toggle = { "catppuccin", "tundra" },
 	-- hl_override = {
 	-- 	Comment = { italic = true },
 	-- 	["@comment"] = { italic = true },
 	-- },
+  hl_override = {
+    -- Catppuccin Red for breakpoints
+    DapBreakpoint = { fg = "#eba0ac" },
+
+    -- Catppuccin Blue for log points
+    DapLogPoint = { fg = "#89b4fa" },
+
+    -- Catppuccin Green for the stopped/current line highlight
+    DapStopped = { fg = "#a6e3a1" },
+  },
+}
+
+M.ui = {
+  theme = "tundra"
 }
 
 return M

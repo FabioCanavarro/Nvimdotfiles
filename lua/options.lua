@@ -9,6 +9,11 @@ local is_windows = vim.fn.has "win64" == 1 or vim.fn.has "win32" == 1 or vim.fn.
 
 vim.o.relativenumber = true
 
+if is_windows then
+    vim.o.guifont = "FiraCode NF Retina:h11"
+end
+
+
 if vim.g.neovide then
   vim.g.transparency = 0.65
   local alpha = function()
@@ -17,7 +22,6 @@ if vim.g.neovide then
   vim.g.neovide_opacity = 0.8
   vim.g.neovide_normal_opacity = 0.8
   if is_windows then
-    vim.o.guifont = "FiraCode NF Retina:h11"
     vim.g.neovide_fullscreen = true
   end
   vim.g.neovide_background_color = "#0f1117" .. alpha()
@@ -49,22 +53,6 @@ vim.lsp.inlay_hint.enable(true)
 vim.g.autosave_disable_inside_paths = { "../init.lua" }
 
 vim.g.rustaceanvim = function()
-  -- Update this path
-  local extension_path = vim.env.HOME .. "/.vscode/extensions/vadimcn.vscode-lldb-1.10.0/"
-  local codelldb_path = extension_path .. "adapter/codelldb"
-  local liblldb_path = extension_path .. "lldb/lib/liblldb"
-  local this_os = vim.uv.os_uname().sysname
-
-  -- The path is different on Windows
-  if this_os:find "Windows" then
-    codelldb_path = extension_path .. "adapter\\codelldb.exe"
-    liblldb_path = extension_path .. "lldb\\bin\\liblldb.dll"
-  else
-    -- The liblldb extension is .so for Linux and .dylib for MacOS
-    liblldb_path = liblldb_path .. (this_os == "Linux" and ".so" or ".dylib")
-  end
-
-  local cfg = require "rustaceanvim.config"
   return {
     tools = {},
     -- LSP configuration
@@ -86,7 +74,7 @@ vim.g.rustaceanvim = function()
             },
 
             -- ENABLED: Shows the return type of each step in a method chain.
-            chainingHints = {
+              chainingHints = {
               enable = true,
             },
 
@@ -168,8 +156,7 @@ vim.g.rustaceanvim = function()
         },
       },
     },
-    dap = {
-      adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
-    },
   }
 end
+
+

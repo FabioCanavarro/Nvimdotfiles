@@ -6,6 +6,10 @@ local map = vim.keymap.set
 local dap = require("dap")
 local dapui = require("dapui")
 
+---@type ChadrcConfig
+local M = {}
+
+
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 
@@ -53,11 +57,6 @@ vim.keymap.set("n", "<C-t>", function()
   require("menu").open("default")
 end, {desc = "Open context menu"})
 
-vim.keymap.set("n", "<Leader>t", function()
-  require("menu").open("default")
-end, {desc = "Open context menu"})
-
-
 vim.keymap.set("n", "<Leader>h", function()
   vim.cmd "FloatermToggle"
 end, { desc = "FloatermToggle" })
@@ -87,3 +86,4 @@ end, { desc = "Debug Rust Target" })
 vim.keymap.set("n", "<Leader>dC", function()
   vim.cmd.RustLsp('debuggables!')
 end, { desc = "Continue (Rerun) Last Debug" })
+vim.keymap.set("n", "<Leader>tt", "<cmd>Telescope themes<cr>", { desc = "Toggle theme" })

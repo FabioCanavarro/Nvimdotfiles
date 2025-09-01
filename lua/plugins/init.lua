@@ -248,6 +248,7 @@ return {
   lazy = false,
   {
     "mfussenegger/nvim-dap",
+    priority = 1000,
     dependencies = {
       -- Installs the debug adapters for you
       {
@@ -262,9 +263,10 @@ return {
       "rcarriga/nvim-dap-ui",
     },
     config = function()
-      vim.api.nvim_set_hl(0, 'DapBreakpoint', { ctermbg=0, guifg='#993939', guibg='#31353f' })
-      vim.api.nvim_set_hl(0, 'DapLogPoint', { ctermbg=0, guifg='#61afef', guibg='#31353f' })
-      vim.api.nvim_set_hl(0, 'DapStopped', { ctermbg=0, guifg='#98c379', guibg='#31353f' })
+      local namespace = vim.api.nvim_create_namespace("dap-hlng")
+      vim.api.nvim_set_hl(namespace, 'DapBreakpoint', { fg='#eaeaeb', bg='#ffffff' })
+      vim.api.nvim_set_hl(namespace, 'DapLogPoint', { fg='#eaeaeb', bg='#ffffff' })
+      vim.api.nvim_set_hl(namespace, 'DapStopped', { fg='#eaeaeb', bg='#ffffff' })
 
       vim.fn.sign_define('DapBreakpoint', { text='', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
       vim.fn.sign_define('DapBreakpointCondition', { text='ﳁ', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
