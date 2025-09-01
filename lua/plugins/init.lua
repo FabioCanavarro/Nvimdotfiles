@@ -346,4 +346,11 @@ return {
     end,
   },
   { "meznaric/key-analyzer.nvim", opts = {} },
+  {
+    "nvzone/floaterm",
+    dependencies = "nvzone/volt",
+    opts = {},
+    cmd = "FloatermToggle",
+  },
+  { "nvzone/menu" , lazy = true },
 }

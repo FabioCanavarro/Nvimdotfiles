@@ -46,3 +46,16 @@ vim.api.nvim_create_user_command("Format", function(args)
   end
   require("conform").format { async = true, lsp_format = "fallback", range = range }
 end, { range = true })
+
+vim.keymap.set("n", "<C-t>", function()
+  require("menu").open("default")
+end, {desc = "Open context menu"})
+
+vim.keymap.set("n", "<Leader>t", function()
+  require("menu").open("default")
+end, {desc = "Open context menu"})
+
+
+vim.keymap.set("n", "<Leader>h", function()
+  vim.cmd "FloatermToggle"
+end, { desc = "FloatermToggle" })

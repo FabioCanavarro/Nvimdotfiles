@@ -200,7 +200,41 @@ require("neotest").setup {
 
 require("noice").setup {}
 
-vim.cmd "NvimTreeToggle"
+require("key-analyzer").setup({
+    -- Name of the command to use for the plugin
+    command_name = "KeyAnalyzer", -- or nil to disable the command
+
+    -- Customize the highlight groups
+    highlights = {
+        bracket_used = "KeyAnalyzerBracketUsed",
+        letter_used = "KeyAnalyzerLetterUsed",
+        bracket_unused = "KeyAnalyzerBracketUnused",
+        letter_unused = "KeyAnalyzerLetterUnused",
+        promo_highlight = "KeyAnalyzerPromo",
+
+        -- Set to false if you want to define highlights manually
+        define_default_highlights = true,
+    },
+
+    -- Keyboard layout to use
+    -- Available options are: qwerty, colemak, colemak-dh, azerty, qwertz, dvorak
+    layout = "qwerty",
+
+    promotion = false,
+})
+
+require("floatterm").setup( {
+    border = false,
+    size = { h = 60, w = 70 },
+
+    mappings = { sidebar = nil, term = nil},
+
+    terminals = {
+      { name = "Terminal", cmd = "neofetch" },
+    },
+})
+
+
 vim.cmd "NvimTreeResize 20"
 vim.cmd "NvimTreeToggle"
 vim.cmd "Precognition show"
