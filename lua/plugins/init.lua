@@ -245,8 +245,6 @@ return {
       require("crates").setup()
     end,
   },
-  dependencies = { "nvim-lua/plenary.nvim" },
-  lazy = false,
   {
     "mfussenegger/nvim-dap",
     priority = 1000,
