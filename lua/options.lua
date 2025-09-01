@@ -10,7 +10,7 @@ local is_windows = vim.fn.has "win64" == 1 or vim.fn.has "win32" == 1 or vim.fn.
 vim.o.relativenumber = true
 
 if is_windows then
-    vim.o.guifont = "FiraCode NF Retina:h11"
+    vim.o.guifont = "FiraCode_NF_Retina,Hack_Nerd_Font_Mono:h11:h11"
 end
 
 

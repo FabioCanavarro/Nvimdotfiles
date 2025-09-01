@@ -13,7 +13,7 @@
   "cmp_luasnip": { "branch": "master", "commit": "98d9cb5c2c38532bd9bdb481067b20fea8f32e90" },
   "codewindow.nvim": { "branch": "master", "commit": "a8e175043ce3baaa89e0a6b5171bcd920aab3dad" },
   "conform.nvim": { "branch": "master", "commit": "b4aab989db276993ea5dcb78872be494ce546521" },
-  "cord.nvim": { "branch": "master", "commit": "7b53b161caaed7a9ee19a68838c9db5f4c8ebc39" },
+  "cord.nvim": { "branch": "master", "commit": "a66b3608603b6986b90575846e522f79609d8e1c" },
   "crates.nvim": { "branch": "main", "commit": "afcd1cc3eeceb5783676fc8464389b9216a29d05" },
   "floaterm": { "branch": "main", "commit": "ae3de018d20dccd9372bbff7137e8a6d6030f69e" },
   "friendly-snippets": { "branch": "main", "commit": "572f5660cf05f8cd8834e096d7b4c921ba18e175" },
