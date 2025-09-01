@@ -44,6 +44,9 @@ end)
 
 require("hardtime").setup()
 
+require("nvim-web-devicons").setup()
+
+
 require("precognition").toggle()
 
 require("time-tracker").setup {
@@ -234,6 +237,70 @@ require("floaterm").setup( {
     },
 })
 
+require("catppuccin").setup({
+    flavour = "mocha", -- latte, frappe, macchiato, mocha
+    background = { -- :h background
+        light = "latte",
+        dark = "mocha",
+    },
+    transparent_background = false, -- disables setting the background color.
+    float = {
+        transparent = false, -- enable transparent floating windows
+        solid = false, -- use solid styling for floating windows, see |winborder|
+    },
+    term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
+    dim_inactive = {
+        enabled = false, -- dims the background color of inactive window
+        shade = "dark",
+        percentage = 0.15, -- percentage of the shade to apply to the inactive window
+    },
+    color_overrides = {},
+    custom_highlights = {},
+    default_integrations = true,
+    auto_integrations = true,
+    integrations = {
+        cmp = true,
+        gitsigns = true,
+        nvimtree = true,
+        treesitter = true,
+        notify = true,
+        mini = {
+            enabled = true,
+            indentscope_color = "",
+        },
+        -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+    },
+    highlight_overrides = {
+        all = function(colors)
+            return {
+                NvimTreeNormal = { fg = colors.none },
+                CmpBorder = { fg = "#3e4145" },
+            }
+        end,
+        latte = function(latte)
+            return {
+                Normal = { fg = latte.base },
+            }
+        end,
+        frappe = function(frappe)
+            return {
+                ["@comment"] = { fg = frappe.surface2, style = { "italic" } },
+            }
+        end,
+        macchiato = function(macchiato)
+            return {
+                LineNr = { fg = macchiato.overlay1 },
+            }
+        end,
+        mocha = function(mocha)
+            return {
+                Comment = { fg = mocha.mauve },
+            }
+        end,
+    },
+})
+
+vim.cmd.colorscheme "catppuccin"
 
 vim.cmd "NvimTreeResize 20"
 vim.cmd "NvimTreeToggle"

@@ -4,6 +4,7 @@ return {
     -- event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
+  { "nvim-tree/nvim-web-devicons", opts = {} },
 
   -- These are some examples, uncomment them if you want to see them work!
   {
@@ -396,4 +397,5 @@ return {
     cmd = "FloatermToggle",
   },
   { "nvzone/menu" , lazy = true },
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 }
 }
