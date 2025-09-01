@@ -268,6 +268,12 @@ require("catppuccin").setup({
             enabled = true,
             indentscope_color = "",
         },
+        which_key = true,
+        barbar = true,
+        beacon = true,
+        diffview = true,
+        gitgraph = true 
+
         -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
     },
     highlight_overrides = {
@@ -302,7 +308,9 @@ require("catppuccin").setup({
 
 vim.cmd.colorscheme "catppuccin"
 
+require("barbar").setup({})
+require("gitgraph").setup({})
+require("barbar").setup({})
 vim.cmd "NvimTreeResize 20"
-vim.cmd "NvimTreeToggle"
 vim.cmd "Precognition show"
 vim.cmd "ShowkeysToggle"

@@ -12,7 +12,10 @@ return {
     config = function()
       require "configs.lspconfig"
     end,
-  },
+  },{
+"NvChad/nvterm",
+enabled = false
+},
 
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",
@@ -395,5 +398,50 @@ return {
     cmd = "FloatermToggle",
   },
   { "nvzone/menu" , lazy = true },
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 }
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+{'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    },
+    init = function() vim.g.barbar_auto_setup = false end,
+    opts = {
+      -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+      -- animation = true,
+      -- insert_at_start = true,
+      -- …etc.
+    },
+    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+  },{"sindrets/diffview.nvim", cmd = "DiffviewOpen"},
+  {
+    'isakbm/gitgraph.nvim',
+    opts = {
+      git_cmd = "git",
+      symbols = {
+        merge_commit = 'M',
+        commit = '*',
+      },
+      format = {
+        timestamp = '%H:%M:%S %d-%m-%Y',
+        fields = { 'hash', 'timestamp', 'author', 'branch_name', 'tag' },
+      },
+      hooks = {
+        on_select_commit = function(commit)
+          print('selected commit:', commit.hash)
+        end,
+        on_select_range_commit = function(from, to)
+          print('selected range:', from.hash, to.hash)
+        end,
+      },
+    },
+    keys = {
+      {
+        "<leader>gl",
+        function()
+          require('gitgraph').draw({}, { all = true, max_count = 5000 })
+        end,
+        desc = "GitGraph - Draw",
+      },
+    },
+  },
 }

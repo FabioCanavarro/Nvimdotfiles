@@ -14,9 +14,9 @@ map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 
 map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
-map("n", "<C-t>", function()
-  require("nvchad.themes").open {}
-end)
+vim.keymap.del({ "n", "t" }, "<A-v>")
+vim.keymap.del({ "n", "t" }, "<A-h>")
+vim.keymap.del({ "n", "t" }, "<A-i>")
 
 map("n", "<Leader>pi", function()
   -- Toggle the global inlay hint setting
@@ -53,17 +53,18 @@ vim.api.nvim_create_user_command("Format", function(args)
   require("conform").format { async = true, lsp_format = "fallback", range = range }
 end, { range = true })
 
-vim.keymap.set("n", "<C-t>", function()
+vim.keymap.set({ "n", "t" }, "<C-t>", function()
   require("menu").open("default")
 end, {desc = "Open context menu"})
 
-vim.keymap.set("n", "<Leader>h", function()
+vim.keymap.set({ "n", "t" }, "<A-h>", function()
   vim.cmd "FloatermToggle"
 end, { desc = "FloatermToggle" })
 
-vim.keymap.set("n", "<A-h>", function()
+vim.keymap.set({ "n", "t" }, "<A-i>", function()
   vim.cmd "FloatermToggle"
 end, { desc = "FloatermToggle" })
+
 
 -- Debuggers
 vim.keymap.set("n", "<Leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
@@ -87,3 +88,35 @@ vim.keymap.set("n", "<Leader>dC", function()
   vim.cmd.RustLsp('debuggables!')
 end, { desc = "Continue (Rerun) Last Debug" })
 vim.keymap.set("n", "<Leader>tt", "<cmd>Telescope themes<cr>", { desc = "Toggle theme" })
+
+local opts = { noremap = true, silent = true }
+
+map('n', '<A-,>', '<Cmd>BufferPrevious<CR>', opts)
+map('n', '<A-.>', '<Cmd>BufferNext<CR>', opts)
+map('n', '<S-Tab>', '<Cmd>BufferPrevious<CR>', opts)
+map('n', '<Tab>', '<Cmd>BufferNext<CR>', opts)
+
+map('n', '<A-<>', '<Cmd>BufferMovePrevious<CR>', opts)
+map('n', '<A->>', '<Cmd>BufferMoveNext<CR>', opts)
+
+map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>', opts)
+map('n', '<A-2>', '<Cmd>BufferGoto 2<CR>', opts)
+map('n', '<A-3>', '<Cmd>BufferGoto 3<CR>', opts)
+map('n', '<A-4>', '<Cmd>BufferGoto 4<CR>', opts)
+map('n', '<A-5>', '<Cmd>BufferGoto 5<CR>', opts)
+map('n', '<A-6>', '<Cmd>BufferGoto 6<CR>', opts)
+map('n', '<A-7>', '<Cmd>BufferGoto 7<CR>', opts)
+map('n', '<A-8>', '<Cmd>BufferGoto 8<CR>', opts)
+map('n', '<A-9>', '<Cmd>BufferGoto 9<CR>', opts)
+map('n', '<A-0>', '<Cmd>BufferLast<CR>', opts)
+
+map('n', '<A-p>', '<Cmd>BufferPin<CR>', opts)
+
+map('n', '<A-x>', '<Cmd>BufferClose<CR>', opts)
+map('n', '<Leader>xo', '<Cmd>BufferClose<CR>', opts)
+
+map('n', '<Leader>bb', '<Cmd>BufferOrderByBufferNumber<CR>', opts)
+map('n', '<Leader>bn', '<Cmd>BufferOrderByName<CR>', opts)
+map('n', '<Leader>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
+map('n', '<Leader>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
+map('n', '<Leader>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)

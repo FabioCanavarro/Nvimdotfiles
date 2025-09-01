@@ -25,7 +25,10 @@ M.base46 = {
 }
 
 M.ui = {
-  theme = "tundra"
+  theme = "tundra",
+  tabufline = {
+    enabled= false
+  }
 }
 
 return M
