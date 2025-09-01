@@ -334,4 +334,7 @@ return {
     return opts
   end,
 },
+ {
+    { "meznaric/key-analyzer.nvim", opts = {} },
+}
 }
