@@ -131,7 +131,7 @@ vim.g.rustaceanvim = function()
             },
             -- DEFAULT (Off): Does not show the implied `Sized` bound on generic parameters.
             implicitSizedBoundHints = {
-              enable = false,
+              enable = true,
             },
 
             -- DEFAULT (Off): Does not show hints for generic type or lifetime parameter names at call sites.
@@ -158,5 +158,4 @@ vim.g.rustaceanvim = function()
     },
   }
 end
-
 

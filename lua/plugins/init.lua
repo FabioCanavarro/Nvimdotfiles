@@ -27,7 +27,7 @@ enabled = false
   -- 	},
   -- },
 
-  { "vuciv/golf" },
+  { "vuciv/golf", cmd="Golf" },
   {
     "folke/which-key.nvim",
     keys = { "<leader>", "<c-w>", '"', "'", "`", "c", "v", "g", "<C>" },
@@ -347,8 +347,7 @@ enabled = false
     "vyfor/cord.nvim",
     build = ":Cord update",
     -- opts = {}
-  },
-  { "nvzone/showkeys", cmd = "ShowkeysToggle" },
+  }, 
   {
     "nvim-neotest/neotest",
     dependencies = {
@@ -412,7 +411,7 @@ enabled = false
       -- …etc.
     },
     version = '^1.0.0', -- optional: only update when a new 1.x version is released
-  },{"sindrets/diffview.nvim", cmd = "DiffviewOpen"},
+  },
   {
     'isakbm/gitgraph.nvim',
     opts = {
@@ -443,5 +442,14 @@ enabled = false
         desc = "GitGraph - Draw",
       },
     },
+  },{
+    "nvzone/showkeys",
+    cmd = "ShowkeysToggle",
+    opts = {
+      maxkeys = 5,
+      position = "top-center",
+    },
+    lazy = false,
+    priority = 1000
   },
 }

@@ -310,7 +310,8 @@ vim.cmd.colorscheme "catppuccin"
 
 require("barbar").setup({})
 require("gitgraph").setup({})
-require("barbar").setup({})
-vim.cmd "NvimTreeResize 20"
+require("showkeys").setup({})
 vim.cmd "Precognition show"
 vim.cmd "ShowkeysToggle"
+
+

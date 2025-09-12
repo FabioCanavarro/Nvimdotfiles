@@ -120,3 +120,6 @@ map('n', '<Leader>bn', '<Cmd>BufferOrderByName<CR>', opts)
 map('n', '<Leader>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
 map('n', '<Leader>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
 map('n', '<Leader>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
+
+
+vim.keymap.del({ "n", "t" }, "<Leader>")
