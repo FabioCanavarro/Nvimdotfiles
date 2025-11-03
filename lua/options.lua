@@ -25,8 +25,8 @@ if vim.g.neovide then
     vim.g.neovide_fullscreen = true
   end
   vim.g.neovide_background_color = "#0f1117" .. alpha()
-  vim.g.neovide_floating_blur_amount_x = 1.0
-  vim.g.neovide_floating_blur_amount_y = 1.0
+  vim.g.neovide_floating_blur_amount_x = 7.0
+  vim.g.neovide_floating_blur_amount_y = 7.0
   vim.g.neovide_floating_shadow = true
   vim.g.neovide_floating_z_height = 10
   vim.g.neovide_cursor_antialiasing = true
@@ -39,7 +39,6 @@ if vim.g.neovide then
   vim.g.neovide_hide_mouse_when_typing = true
   vim.g.neovide_light_angle_degrees = 45
   vim.g.neovide_light_radius = 5
-  vim.g.neovide_refresh_rate = 240
 end
 
 if is_windows then
@@ -159,4 +158,4 @@ vim.g.rustaceanvim = function()
   }
 end
 
-
+vim.opt.linespace = 3

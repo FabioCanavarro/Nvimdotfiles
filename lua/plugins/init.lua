@@ -12,10 +12,11 @@ return {
     config = function()
       require "configs.lspconfig"
     end,
-  },{
-"NvChad/nvterm",
-enabled = false
-},
+  },
+  {
+    "NvChad/nvterm",
+    enabled = false,
+  },
 
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",
@@ -55,7 +56,7 @@ enabled = false
         command_palette = true, -- position the cmdline and popupmenu together
         long_message_to_split = true, -- long messages will be sent to a split
         inc_rename = false, -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = false, -- add a border to hover docs and signature help
+        lsp_doc_border = true, -- add a border to hover docs and signature help
       },
       cmdline = {
         view = "cmdline",
@@ -77,6 +78,9 @@ enabled = false
     version = "^5", -- Recommended
     lazy = false, -- This plugin is already lazy
     ft = { "rust" },
+    dependencies = {
+      "mfussenegger/nvim-dap",
+    },
   },
   {
     "folke/todo-comments.nvim",
@@ -249,6 +253,24 @@ enabled = false
     end,
   },
   {
+    "rcarriga/nvim-dap-ui",
+    config = true,
+    keys = {
+      {
+        "<leader>du",
+        function()
+          require("dapui").toggle {}
+        end,
+        desc = "Dap UI",
+      },
+    },
+    dependencies = {
+      "jay-babu/mason-nvim-dap.nvim",
+      "nvim-neotest/nvim-nio",
+      "theHamsta/nvim-dap-virtual-text",
+    },
+  },
+  {
     "mfussenegger/nvim-dap",
     priority = 1000,
     dependencies = {
@@ -256,30 +278,43 @@ enabled = false
       {
         "jay-babu/mason-nvim-dap.nvim",
         config = function()
-          require("mason-nvim-dap").setup({
+          require("mason-nvim-dap").setup {
             ensure_installed = { "codelldb" }, -- Automatically installs codelldb
-          })
+          }
         end,
       },
       -- Recommended UI for a better debugging experience
-      "rcarriga/nvim-dap-ui",
+      "igorlfs/nvim-dap-ui",
     },
     config = function()
-      local namespace = vim.api.nvim_create_namespace("dap-hlng")
-      vim.api.nvim_set_hl(namespace, 'DapBreakpoint', { fg='#eaeaeb', bg='#ffffff' })
-      vim.api.nvim_set_hl(namespace, 'DapLogPoint', { fg='#eaeaeb', bg='#ffffff' })
-      vim.api.nvim_set_hl(namespace, 'DapStopped', { fg='#eaeaeb', bg='#ffffff' })
+      local namespace = vim.api.nvim_create_namespace "dap-hlng"
+      vim.api.nvim_set_hl(namespace, "DapBreakpoint", { fg = "#eaeaeb", bg = "#ffffff" })
+      vim.api.nvim_set_hl(namespace, "DapLogPoint", { fg = "#eaeaeb", bg = "#ffffff" })
+      vim.api.nvim_set_hl(namespace, "DapStopped", { fg = "#eaeaeb", bg = "#ffffff" })
 
-      vim.fn.sign_define('DapBreakpoint', { text='', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
-      vim.fn.sign_define('DapBreakpointCondition', { text='ﳁ', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
-      vim.fn.sign_define('DapBreakpointRejected', { text='', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl= 'DapBreakpoint' })
-      vim.fn.sign_define('DapLogPoint', { text='', texthl='DapLogPoint', linehl='DapLogPoint', numhl= 'DapLogPoint' })
-      vim.fn.sign_define('DapStopped', { text='', texthl='DapStopped', linehl='DapStopped', numhl= 'DapStopped' })
+      vim.fn.sign_define(
+        "DapBreakpoint",
+        { text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" }
+      )
+      vim.fn.sign_define(
+        "DapBreakpointCondition",
+        { text = "ﳁ", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" }
+      )
+      vim.fn.sign_define(
+        "DapBreakpointRejected",
+        { text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" }
+      )
+      vim.fn.sign_define(
+        "DapLogPoint",
+        { text = "", texthl = "DapLogPoint", linehl = "DapLogPoint", numhl = "DapLogPoint" }
+      )
+      vim.fn.sign_define(
+        "DapStopped",
+        { text = "", texthl = "DapStopped", linehl = "DapStopped", numhl = "DapStopped" }
+      )
 
-      local dap = require("dap")
-      local dapui = require("dapui")
-
-      dapui.setup()
+      local dap = require "dap"
+      local dapui = require "dapui"
 
       -- Automatically open/close dap-ui when a debug session starts/ends
       dap.listeners.after.event_initialized["dapui_config"] = function()
@@ -397,40 +432,44 @@ enabled = false
     opts = {},
     cmd = "FloatermToggle",
   },
-  { "nvzone/menu" , lazy = true },
+  { "nvzone/menu", lazy = true },
   { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
-{'romgrk/barbar.nvim',
+  {
+    "romgrk/barbar.nvim",
     dependencies = {
-      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
-      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+      "lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
+      "nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
     },
-    init = function() vim.g.barbar_auto_setup = false end,
+    init = function()
+      vim.g.barbar_auto_setup = false
+    end,
     opts = {
       -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
       -- animation = true,
       -- insert_at_start = true,
       -- …etc.
     },
-    version = '^1.0.0', -- optional: only update when a new 1.x version is released
-  },{"sindrets/diffview.nvim", cmd = "DiffviewOpen"},
+    version = "^1.0.0", -- optional: only update when a new 1.x version is released
+  },
+  { "sindrets/diffview.nvim", cmd = "DiffviewOpen" },
   {
-    'isakbm/gitgraph.nvim',
+    "isakbm/gitgraph.nvim",
     opts = {
       git_cmd = "git",
       symbols = {
-        merge_commit = 'M',
-        commit = '*',
+        merge_commit = "M",
+        commit = "*",
       },
       format = {
-        timestamp = '%H:%M:%S %d-%m-%Y',
-        fields = { 'hash', 'timestamp', 'author', 'branch_name', 'tag' },
+        timestamp = "%H:%M:%S %d-%m-%Y",
+        fields = { "hash", "timestamp", "author", "branch_name", "tag" },
       },
       hooks = {
         on_select_commit = function(commit)
-          print('selected commit:', commit.hash)
+          print("selected commit:", commit.hash)
         end,
         on_select_range_commit = function(from, to)
-          print('selected range:', from.hash, to.hash)
+          print("selected range:", from.hash, to.hash)
         end,
       },
     },
@@ -438,10 +477,46 @@ enabled = false
       {
         "<leader>gl",
         function()
-          require('gitgraph').draw({}, { all = true, max_count = 5000 })
+          require("gitgraph").draw({}, { all = true, max_count = 5000 })
         end,
         desc = "GitGraph - Draw",
       },
+    },
+  },
+  {
+    "stevearc/aerial.nvim",
+    opts = {},
+    -- Optional dependencies
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+  },
+  {
+    "kdheepak/lazygit.nvim",
+    lazy = true,
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+    },
+  },
+  {
+    "theHamsta/nvim-dap-virtual-text",
+    config = true,
+    dependencies = {
+      "mfussenegger/nvim-dap",
     },
   },
 }
