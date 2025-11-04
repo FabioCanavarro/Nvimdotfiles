@@ -284,7 +284,7 @@ return {
         end,
       },
       -- Recommended UI for a better debugging experience
-      "igorlfs/nvim-dap-ui",
+      "rcarriga/nvim-dap-ui",
     },
     config = function()
       local namespace = vim.api.nvim_create_namespace "dap-hlng"
@@ -517,6 +517,40 @@ return {
     config = true,
     dependencies = {
       "mfussenegger/nvim-dap",
+    },
+  },
+  {
+    "cordx56/rustowl",
+    version = "*",
+    build = "cargo binstall rustowl",
+    lazy = false,
+    opts = {
+      auto_enable = false,
+      idle_time = 300,
+      highlight_style = "underline",
+      colors = {
+        lifetime = "#a6e3a1", -- Catppuccin Green
+        imm_borrow = "#89dceb", -- Catppuccin Sky
+        mut_borrow = "#f5c2e7", -- Catppuccin Pink
+        move = "#f9e2af", -- Catppuccin Yellow
+        call = "#89b4fa", -- Catppuccin Blue (often used for functions)
+        outlive = "#f38ba8", -- Catppuccin Red
+      },
+      client = {
+        on_attach = function(_, buffer)
+          vim.keymap.set("n", "<leader>ro", function()
+            require("rustowl").toggle(buffer)
+          end, { buffer = buffer, desc = "Toggle RustOwl" })
+
+          vim.keymap.set("n", "<leader>re", function()
+            require("rustowl").enable(buffer)
+          end, { buffer = buffer, desc = "Enable RustOwl" })
+
+          vim.keymap.set("n", "<leader>rd", function()
+            require("rustowl").disable(buffer)
+          end, { buffer = buffer, desc = "Disable RustOwl" })
+        end,
+      },
     },
   },
 }
