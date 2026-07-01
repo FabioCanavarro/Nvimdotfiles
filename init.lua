@@ -1,6 +1,44 @@
+-- ==============================================================================
+-- 1. GLOBAL SETTINGS & WORKAROUNDS
+-- ==============================================================================
+
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
--- bootstrap lazy and all plugins
+
+-- Disable all the annoying ding sounds
+vim.opt.errorbells = false
+vim.opt.visualbell = false
+vim.opt.belloff = "all"
+
+-- Cursorline
+vim.opt.cursorline = true
+
+-- Temporary workaround for barbar.nvim on Neovim 0.13 nightly
+local _orig_autocmd = vim.api.nvim_create_autocmd
+vim.api.nvim_create_autocmd = function(events, opts)
+  local intercepts_bms = false
+  if type(events) == "string" and events == "BufModifiedSet" then
+    events = "OptionSet"
+    intercepts_bms = true
+  elseif type(events) == "table" then
+    for i, e in ipairs(events) do
+      if e == "BufModifiedSet" then
+        events[i] = "OptionSet"
+        intercepts_bms = true
+      end
+    end
+  end
+  if intercepts_bms then
+    opts = opts or {}
+    opts.pattern = "modified"
+  end
+  return _orig_autocmd(events, opts)
+end
+
+-- ==============================================================================
+-- 2. BOOTSTRAP LAZY.NVIM
+-- ==============================================================================
+
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
 if not vim.uv.fs_stat(lazypath) then
@@ -10,9 +48,12 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-local lazy_config = require "configs.lazy"
+local lazy_config = require "configs.lazy" 
 
--- load plugins
+-- ==============================================================================
+-- 3. LOAD PLUGINS & NVCHAD
+-- ==============================================================================
+
 require("lazy").setup({
   {
     "NvChad/NvChad",
@@ -20,298 +61,38 @@ require("lazy").setup({
     branch = "v2.5",
     import = "nvchad.plugins",
   },
-
   { import = "plugins" },
 }, lazy_config)
 
--- load theme
+-- ==============================================================================
+-- 4. LOAD CORE THEMES, OPTIONS & MAPPINGS
+-- ==============================================================================
+
 dofile(vim.g.base46_cache .. "defaults")
 dofile(vim.g.base46_cache .. "statusline")
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "*",
+  callback = function()
+    dofile(vim.g.base46_cache .. "statusline")
+  end,
+})
+
+-- Force statusline redraw on macro recording start/stop
+vim.api.nvim_create_autocmd({ "RecordingEnter", "RecordingLeave" }, {
+  callback = function()
+    vim.cmd "redrawstatus"
+  end,
+})
 
 require "options"
 require "nvchad.autocmds"
 
-require("autosave").setup {
-  enabled = true,
-  disable_inside_paths = { "./init.lua", "./" },
-}
-
 vim.loader.enable()
 
+-- Schedule mappings to load after UI stabilization
 vim.schedule(function()
   require "mappings"
+  vim.cmd "colorscheme catppuccin"
 end)
-
-require("hardtime").setup()
-
-require("nvim-web-devicons").setup()
-
-
-require("precognition").toggle()
-
-require("time-tracker").setup {
-  data_file = vim.fn.stdpath "data" .. "/time-tracker.db",
-  tracking_events = { "BufEnter", "BufWinEnter", "CursorMoved", "CursorMovedI", "WinScrolled" },
-  tracking_timeout_seconds = 5 * 60, -- 5 minutes
-}
-
-require("todo-comments").setup {}
-
-require("lspconfig").basedpyright.setup {
-  settings = {
-    basedpyright = {
-      analysis = {
-        diagnosticMode = "openFilesOnly",
-        inlayHints = {
-          callArgumentNames = true,
-        },
-      },
-    },
-  },
-}
-
-require("cord").setup {
-  enabled = true,
-  log_level = vim.log.levels.OFF,
-  editor = {
-    client = "neovim",
-    tooltip = "The Superior Text Editor",
-    icon = nil,
-  },
-  display = {
-    theme = "catppuccin",
-    flavor = "accent",
-    swap_fields = false,
-    swap_icons = false,
-  },
-  timestamp = {
-    enabled = true,
-    reset_on_idle = false,
-    reset_on_change = false,
-  },
-  idle = {
-    enabled = false,
-    timeout = 300000,
-    show_status = true,
-    ignore_focus = false,
-    unidle_on_focus = true,
-    smart_idle = true,
-    details = "Idling",
-    state = nil,
-    tooltip = "💤",
-    icon = nil,
-  },
-  text = {
-    default = nil,
-    workspace = function(opts)
-      return "Cooking in " .. opts.workspace
-    end,
-    viewing = function(opts)
-      return "Viewing " .. opts.filename
-    end,
-    editing = function(opts)
-      return "Editing " .. opts.filename
-    end,
-    file_browser = function(opts)
-      return "Browsing files in " .. opts.name
-    end,
-    plugin_manager = function(opts)
-      return "Managing plugins in " .. opts.name
-    end,
-    lsp = function(opts)
-      return "Configuring LSP in " .. opts.name
-    end,
-    docs = function(opts)
-      return "Reading " .. opts.name
-    end,
-    vcs = function(opts)
-      return "Committing changes in " .. opts.name
-    end,
-    notes = function(opts)
-      return "Taking notes in " .. opts.name
-    end,
-    debug = function(opts)
-      return "Crying in " .. opts.name
-    end,
-    test = function(opts)
-      return "Hoping that " .. opts.name .. " will work!!"
-    end,
-    diagnostics = function(opts)
-      return "Crying in " .. opts.name
-    end,
-    games = function(opts)
-      return "Playing " .. opts.name
-    end,
-    terminal = "Terminaling so hard rn!!!",
-    dashboard = "Home",
-  },
-  buttons = {
-    {
-      label = "View Repository",
-      url = function(opts)
-        return opts.repo_url
-      end,
-    },
-  },
-  assets = nil,
-  variables = nil,
-  hooks = {
-    ready = nil,
-    shutdown = nil,
-    pre_activity = nil,
-    post_activity = nil,
-    idle_enter = nil,
-    idle_leave = nil,
-    workspace_change = nil,
-  },
-  plugins = nil,
-  advanced = {
-    plugin = {
-      autocmds = true,
-      cursor_update = "on_hold",
-      match_in_mappings = true,
-    },
-    server = {
-      update = "fetch",
-      pipe_path = nil,
-      executable_path = nil,
-      timeout = 300000,
-    },
-    discord = {
-      reconnect = {
-        enabled = false,
-        interval = 5000,
-        initial = true,
-      },
-    },
-    workspace = {
-      root_markers = {
-        ".git",
-        ".hg",
-        ".svn",
-      },
-      limit_to_cwd = false,
-    },
-  },
-}
-
-require("neotest").setup {
-  adapters = {
-    require "rustaceanvim.neotest",
-  },
-}
-
-require("noice").setup {}
-
-require("key-analyzer").setup({
-    -- Name of the command to use for the plugin
-    command_name = "KeyAnalyzer", -- or nil to disable the command
-
-    -- Customize the highlight groups
-    highlights = {
-        bracket_used = "KeyAnalyzerBracketUsed",
-        letter_used = "KeyAnalyzerLetterUsed",
-        bracket_unused = "KeyAnalyzerBracketUnused",
-        letter_unused = "KeyAnalyzerLetterUnused",
-        promo_highlight = "KeyAnalyzerPromo",
-
-        -- Set to false if you want to define highlights manually
-        define_default_highlights = true,
-    },
-
-    -- Keyboard layout to use
-    -- Available options are: qwerty, colemak, colemak-dh, azerty, qwertz, dvorak
-    layout = "qwerty",
-
-    promotion = false,
-})
-
-require("floaterm").setup( {
-    border = false,
-    size = { h = 60, w = 70 },
-
-    mappings = { sidebar = nil, term = nil},
-
-    terminals = {
-      { name = "Terminal", cmd = "neofetch" },
-    },
-})
-
-require("catppuccin").setup({
-    flavour = "mocha", -- latte, frappe, macchiato, mocha
-    background = { -- :h background
-        light = "latte",
-        dark = "mocha",
-    },
-    transparent_background = false, -- disables setting the background color.
-    float = {
-        transparent = false, -- enable transparent floating windows
-        solid = false, -- use solid styling for floating windows, see |winborder|
-    },
-    term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
-    dim_inactive = {
-        enabled = false, -- dims the background color of inactive window
-        shade = "dark",
-        percentage = 0.15, -- percentage of the shade to apply to the inactive window
-    },
-    color_overrides = {},
-    custom_highlights = {},
-    default_integrations = true,
-    auto_integrations = true,
-    integrations = {
-        cmp = true,
-        gitsigns = true,
-        nvimtree = true,
-        treesitter = true,
-        notify = true,
-        mini = {
-            enabled = true,
-            indentscope_color = "",
-        },
-        which_key = true,
-        barbar = true,
-        beacon = true,
-        diffview = true,
-        gitgraph = true 
-
-        -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
-    },
-    highlight_overrides = {
-        all = function(colors)
-            return {
-                NvimTreeNormal = { fg = colors.none },
-                CmpBorder = { fg = "#3e4145" },
-            }
-        end,
-        latte = function(latte)
-            return {
-                Normal = { fg = latte.base },
-            }
-        end,
-        frappe = function(frappe)
-            return {
-                ["@comment"] = { fg = frappe.surface2, style = { "italic" } },
-            }
-        end,
-        macchiato = function(macchiato)
-            return {
-                LineNr = { fg = macchiato.overlay1 },
-            }
-        end,
-        mocha = function(mocha)
-            return {
-                Comment = { fg = mocha.mauve },
-            }
-        end,
-    },
-})
-
-vim.cmd.colorscheme "catppuccin"
-
-require("barbar").setup({})
-require("gitgraph").setup({})
-require("showkeys").setup({})
-vim.cmd "Precognition show"
-vim.cmd "ShowkeysToggle"
-
 

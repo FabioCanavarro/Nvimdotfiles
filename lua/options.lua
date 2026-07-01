@@ -2,8 +2,12 @@ require "nvchad.options"
 
 -- add yours here!
 
--- local o = vim.o
--- o.cursorlineopt ='both' -- to enable cursorline!
+local o = vim.o
+o.cursorlineopt ='both' -- to enable cursorline!
+o.updatetime = 250       -- Faster diagnostics and auto-saving feedback
+o.timeoutlen = 400       -- Faster key map/sequence timeouts (makes WhichKey/leader commands feel snappier)
+o.scrolloff = 8          -- Keep 8 lines of context visible when scrolling
+o.pumheight = 10         -- Keep completion menu compact
 
 local is_windows = vim.fn.has "win64" == 1 or vim.fn.has "win32" == 1 or vim.fn.has "win16" == 1
 
@@ -11,6 +15,7 @@ vim.o.relativenumber = true
 
 if is_windows then
     vim.o.guifont = "FiraCode_NF_Retina,Hack_Nerd_Font_Mono:h11:h11"
+    vim.opt.shellslash = true
 end
 
 
@@ -42,11 +47,11 @@ if vim.g.neovide then
   vim.g.neovide_refresh_rate = 240
 end
 
-if is_windows then
-  vim.opt.shell = "D:/Fabio/Tools/Git/usr/bin/zsh.exe"
-  vim.opt.shellcmdflag = " -il -c"
-  vim.opt.shellredir = ">%s 2>&1"
-end
+-- if is_windows then
+--   vim.opt.shell = "D:/Fabio/Tools/Git/usr/bin/zsh.exe"
+--   vim.opt.shellcmdflag = " -il -c"
+--   vim.opt.shellredir = ">%s 2>&1"
+-- end
 
 vim.o.mousemoveevent = false
 vim.lsp.inlay_hint.enable(true)
@@ -63,6 +68,12 @@ vim.g.rustaceanvim = function()
       default_settings = {
         -- rust-analyzer language server configuration
         ["rust-analyzer"] = {
+          procMacro = {
+            enable = true,
+          },
+          cargo = {
+            loadOutDirsFromCheck = true,
+          },
           inlayHints = {
             -- ENABLED: Shows the inferred type for variables (e.g., `let x = 42;` shows `x: i32`).
             typeHints = {

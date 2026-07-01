@@ -1,40 +1,38 @@
 return {
+  -- Core Editing & Formatting
   {
     "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
   { "nvim-tree/nvim-web-devicons", opts = {} },
-
-  -- These are some examples, uncomment them if you want to see them work!
   {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
     end,
-  },{
-"NvChad/nvterm",
-enabled = false
-},
+  },
+  { "NvChad/nvterm", enabled = false },
+  { "vuciv/golf", cmd = "Golf" },
 
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
-
-  { "vuciv/golf", cmd="Golf" },
+  -- UI & Which-Key
   {
     "folke/which-key.nvim",
-    keys = { "<leader>", "<c-w>", '"', "'", "`", "c", "v", "g", "<C>" },
+    keys = { '"', "'", "`", "c", "v", "g", "<leader>" },
     cmd = "WhichKey",
-    opts = function()
+    config = function()
       dofile(vim.g.base46_cache .. "whichkey")
-      return {}
+      local wk = require("which-key")
+      wk.setup()
+      wk.add({
+        { "<leader>b", group = "Buffer sorting" },
+        { "<leader>c", group = "Code/LSP" },
+        { "<leader>d", group = "Debug/DAP" },
+        { "<leader>g", group = "Git" },
+        { "<leader>p", group = "Toggle preference" },
+        { "<leader>w", group = "Window picking" },
+        { "<leader>x", group = "Close buffer" },
+        { "<leader>a", group = "Aerial outline" },
+      })
     end,
   },
   {
@@ -42,53 +40,66 @@ enabled = false
     event = "VeryLazy",
     opts = {
       lsp = {
-        -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
           ["vim.lsp.util.stylize_markdown"] = true,
-          ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+          ["cmp.entry.get_documentation"] = false,
         },
       },
-      -- you can enable a preset for easier configuration
       presets = {
-        bottom_search = true, -- use a classic bottom cmdline for search
-        command_palette = true, -- position the cmdline and popupmenu together
-        long_message_to_split = true, -- long messages will be sent to a split
-        inc_rename = false, -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = false, -- add a border to hover docs and signature help
+        bottom_search = true,
+        command_palette = true,
+        long_message_to_split = true,
+        inc_rename = false,
+        lsp_doc_border = true,
       },
-      cmdline = {
-        view = "cmdline",
-      },
-      -- add any options here
+      cmdline = { view = "cmdline" },
     },
     dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
       "rcarriga/nvim-notify",
     },
+    config = function(_, opts)
+      require("noice").setup(opts)
+      
+      -- Custom shortcuts to scroll documentation/hover in Insert/Normal/Visual mode without focusing
+      vim.keymap.set({"n", "i", "s"}, "<C-f>", function()
+        if not require("noice.lsp").scroll(4) then
+          return "<C-f>"
+        end
+      end, { silent = true, expr = true, desc = "Scroll Docs Down" })
+
+      vim.keymap.set({"n", "i", "s"}, "<C-b>", function()
+        if not require("noice.lsp").scroll(-4) then
+          return "<C-b>"
+        end
+      end, { silent = true, expr = true, desc = "Scroll Docs Up" })
+    end,
   },
-  { "echasnovski/mini.nvim", version = "*" },
+  {
+    "echasnovski/mini.nvim",
+    version = "*",
+    config = function()
+      require("mini.ai").setup()
+    end,
+  },
+
+  -- Languages & Treesitter
   {
     "mrcjkb/rustaceanvim",
-    version = "^5", -- Recommended
-    lazy = false, -- This plugin is already lazy
+    version = "^5",
+    lazy = false,
     ft = { "rust" },
   },
   {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {},
   },
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
     event = { "BufReadPost", "BufNewFile" },
     cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
     build = ":TSUpdate",
@@ -97,191 +108,133 @@ enabled = false
         dofile(vim.g.base46_cache .. "syntax")
         dofile(vim.g.base46_cache .. "treesitter")
       end)
-
       return {
-        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc", "rust", "toml" },
+        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc", "rust", "toml", "markdown", "markdown_inline" },
         auto_install = true,
-        rainbow = {
-          enable = true,
-          extended_mode = true,
-          max_file_lines = nil,
-        },
-
-        highlight = {
-          enable = true,
-          use_languagetree = true,
-        },
-
+        rainbow = { enable = true, extended_mode = true },
+        highlight = { enable = true, use_languagetree = true },
         indent = { enable = true },
       }
     end,
   },
+
+  -- Diagnostics & Utilities
   {
     "folke/trouble.nvim",
-    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    opts = {},
     cmd = "Trouble",
     keys = {
-      {
-        "<leader>xx",
-        "<cmd>Trouble diagnostics toggle<cr>",
-        desc = "Diagnostics (Trouble)",
-      },
-      {
-        "<leader>xX",
-        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-        desc = "Buffer Diagnostics (Trouble)",
-      },
-      {
-        "<leader>cs",
-        "<cmd>Trouble symbols toggle focus=false<cr>",
-        desc = "Symbols (Trouble)",
-      },
-      {
-        "<leader>cl",
-        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-        desc = "LSP Definitions / references / ... (Trouble)",
-      },
-      {
-        "<leader>xL",
-        "<cmd>Trouble loclist toggle<cr>",
-        desc = "Location List (Trouble)",
-      },
-      {
-        "<leader>xQ",
-        "<cmd>Trouble qflist toggle<cr>",
-        desc = "Quickfix List (Trouble)",
-      },
+      { "xx", "Trouble diagnostics toggle", desc = "Diagnostics" },
+      { "xX", "Trouble diagnostics toggle filter.buf=0", desc = "Buffer Diagnostics" },
+      { "cs", "Trouble symbols toggle focus=false", desc = "Symbols" },
+      { "cl", "Trouble lsp toggle focus=false win.position=right", desc = "LSP" },
     },
   },
-  "m-demare/hlargs.nvim",
+  { "m-demare/hlargs.nvim" },
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
-    ---@module "ibl"
-    ---@type ibl.config
-    opts = {},
+    event = { "BufReadPost", "BufNewFile" },
+    config = function()
+      vim.api.nvim_set_hl(0, "IblChar", { fg = "#45475a" })
+      vim.api.nvim_set_hl(0, "IblScopeChar", { fg = "#b4befe" })
+      require("ibl").setup()
+    end,
   },
   {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
     config = true,
-    -- use opts = {} for passing setup options
-    -- this is equivalent to setup({}) function
   },
   {
     "brianhuster/autosave.nvim",
     event = "InsertEnter",
-    opts = {}, -- Configuration here
-    lazy = false,
+    opts = {
+      enabled = true,
+      disable_inside_paths = { "./init.lua", "./" },
+    },
   },
 
+  -- Session & Minimap
   {
     "rmagatti/auto-session",
     lazy = false,
     keys = {
-      -- Will use Telescope if installed or a vim.ui.select picker otherwise
-      { "<leader>wr", "<cmd>SessionSearch<CR>", desc = "Session search" },
-      { "<leader>ws", "<cmd>SessionSave<CR>", desc = "Save session" },
-      { "<leader>wa", "<cmd>SessionToggleAutoSave<CR>", desc = "Toggle autosave" },
+      { "wr", "SessionSearch", desc = "Session search" },
+      { "ws", "SessionSave", desc = "Save session" },
+      { "wa", "SessionToggleAutoSave", desc = "Toggle autosave" },
     },
-
-    ---enables autocomplete for opts
-    ---@module "auto-session"
-    ---@type AutoSession.Config
     opts = {
+      auto_restore = true,
       suppressed_dirs = { "/", "../../../../../../nvim/" },
-      -- ⚠️ This will only work if Telescope.nvim is installed
-      -- The following are already the default values, no need to provide them if these are already the settings you want.
-      session_lens = {
-        -- If load_on_setup is false, make sure you use `:SessionSearch` to open the picker as it will initialize everything first
-        load_on_setup = true,
-        previewer = false,
-        mappings = {
-          -- Mode can be a string or a table, e.g. {"i", "n"} for both insert and normal mode
-          delete_session = { "i", "<C-D>" },
-          alternate_session = { "i", "<C-S>" },
-          copy_session = { "i", "<C-Y>" },
-        },
-        -- Can also set some Telescope picker options
-        -- For all options, see: https://github.com/nvim-telescope/telescope.nvim/blob/master/doc/telescope.txt#L112
-        theme_conf = {
-          border = true,
-          -- layout_config = {
-          --   width = 0.8, -- Can set width and height as percent of window
-          --   height = 0.5,
-          -- },
-        },
-      },
+      session_lens = { load_on_setup = true, previewer = false },
     },
   },
   {
     "gorbit99/codewindow.nvim",
-    lazy = false,
+    event = "VeryLazy",
     config = function()
       local codewindow = require "codewindow"
       codewindow.setup {
-        active_in_terminals = false, -- Should the minimap activate for terminal buffers
-        auto_enable = true, -- Automatically open the minimap when entering a (non-excluded) buffer (accepts a table of filetypes)
-        exclude_filetypes = { "help" }, -- Choose certain filetypes to not show minimap on
-        max_minimap_height = 20, -- The maximum height the minimap can take (including borders)
-        max_lines = nil, -- If auto_enable is true, don't open the minimap for buffers which have more than this many lines.
-        minimap_width = 15, -- The width of the text part of the minimap
-        use_lsp = true, -- Use the builtin LSP to show errors and warnings
-        use_treesitter = true, -- Use nvim-treesitter to highlight the code
-        use_git = true, -- Show small dots to indicate git additions and deletions
-        width_multiplier = 4, -- How many characters one dot represents
-        z_index = 1, -- The z-index the floating window will be on
-        show_cursor = true, -- Show the cursor position in the minimap
-        screen_bounds = "lines", -- How the visible area is displayed, "lines": lines above and below, "background": background color
-        window_border = "single", -- The border style of the floating window (accepts all usual options)
-        relative = "win", -- What will be the minimap be placed relative to, "win": the current window, "editor": the entire editor
+        active_in_terminals = false,
+        auto_enable = true,
+        exclude_filetypes = { "help" },
+        max_minimap_height = 20,
+        max_lines = nil,
+        minimap_width = 15,
+        use_lsp = true,
+        use_treesitter = true,
+        use_git = true,
+        width_multiplier = 4,
+        z_index = 1,
+        show_cursor = true,
+        screen_bounds = "lines",
+        window_border = "single",
+        relative = "win",
         events = { "TextChanged", "InsertLeave", "DiagnosticChanged", "FileWritePost" },
       }
       codewindow.apply_default_keybinds()
     end,
   },
+
+  -- Debugging & External Tools
   {
     "saecki/crates.nvim",
     event = "BufRead Cargo.toml",
     tag = "stable",
     config = function()
       require("crates").setup()
+      vim.api.nvim_create_autocmd("BufRead", {
+        pattern = "Cargo.toml",
+        callback = function()
+          vim.keymap.set("n", "K", function()
+            if require("crates").popup_available() then
+              require("crates").show_popup()
+            else
+              vim.lsp.buf.hover()
+            end
+          end, { buffer = true, desc = "Show Crates Popup" })
+        end,
+      })
     end,
   },
   {
     "mfussenegger/nvim-dap",
     priority = 1000,
     dependencies = {
-      -- Installs the debug adapters for you
       {
         "jay-babu/mason-nvim-dap.nvim",
         config = function()
-          require("mason-nvim-dap").setup({
-            ensure_installed = { "codelldb" }, -- Automatically installs codelldb
-          })
+          require("mason-nvim-dap").setup { ensure_installed = { "codelldb" } }
         end,
       },
-      -- Recommended UI for a better debugging experience
       "rcarriga/nvim-dap-ui",
+      "nvim-neotest/nvim-nio",
     },
     config = function()
-      local namespace = vim.api.nvim_create_namespace("dap-hlng")
-      vim.api.nvim_set_hl(namespace, 'DapBreakpoint', { fg='#eaeaeb', bg='#ffffff' })
-      vim.api.nvim_set_hl(namespace, 'DapLogPoint', { fg='#eaeaeb', bg='#ffffff' })
-      vim.api.nvim_set_hl(namespace, 'DapStopped', { fg='#eaeaeb', bg='#ffffff' })
-
-      vim.fn.sign_define('DapBreakpoint', { text='', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
-      vim.fn.sign_define('DapBreakpointCondition', { text='ﳁ', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl='DapBreakpoint' })
-      vim.fn.sign_define('DapBreakpointRejected', { text='', texthl='DapBreakpoint', linehl='DapBreakpoint', numhl= 'DapBreakpoint' })
-      vim.fn.sign_define('DapLogPoint', { text='', texthl='DapLogPoint', linehl='DapLogPoint', numhl= 'DapLogPoint' })
-      vim.fn.sign_define('DapStopped', { text='', texthl='DapStopped', linehl='DapStopped', numhl= 'DapStopped' })
-
-      local dap = require("dap")
-      local dapui = require("dapui")
-
+      local dap = require "dap"
+      local dapui = require "dapui"
       dapui.setup()
-
-      -- Automatically open/close dap-ui when a debug session starts/ends
       dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
       end
@@ -293,163 +246,216 @@ enabled = false
       end
     end,
   },
-  -- lazy.nvim
-  {
-    "m4xshen/hardtime.nvim",
-    dependencies = { "MunifTanjim/nui.nvim" },
-    opts = {
-      showmode = false,
-      cmdheight = 2,
-    },
-  },
-  {
-    "tris203/precognition.nvim",
-    --event = "VeryLazy",
-    opts = {
-      -- startVisible = true,
-      -- showBlankVirtLine = true,
-      -- highlightColor = { link = "Comment" },
-      -- hints = {
-      --      Caret = { text = "^", prio = 2 },
-      --      Dollar = { text = "$", prio = 1 },
-      --      MatchingPair = { text = "%", prio = 5 },
-      --      Zero = { text = "0", prio = 1 },
-      --      w = { text = "w", prio = 10 },
-      --      b = { text = "b", prio = 9 },
-      --      e = { text = "e", prio = 8 },
-      --      W = { text = "W", prio = 7 },
-      --      B = { text = "B", prio = 6 },
-      --      E = { text = "E", prio = 5 },
-      -- },
-      -- gutterHints = {
-      --     G = { text = "G", prio = 10 },
-      --     gg = { text = "gg", prio = 9 },
-      --     PrevParagraph = { text = "{", prio = 8 },
-      --     NextParagraph = { text = "}", prio = 8 },
-      -- },
-      -- disabled_fts = {
-      --     "startify",
-      -- },
-    },
-  },
   { "wakatime/vim-wakatime", lazy = false },
-  {
-    "3rd/time-tracker.nvim",
-    dependencies = {
-      "3rd/sqlite.nvim",
-    },
-    event = "VeryLazy",
-    opts = {
-      data_file = vim.fn.stdpath "data" .. "/time-tracker.db",
-    },
-  },
   {
     "vyfor/cord.nvim",
     build = ":Cord update",
-    -- opts = {}
-  }, 
-  {
-    "nvim-neotest/neotest",
-    dependencies = {
-      "nvim-neotest/nvim-nio",
-      "nvim-lua/plenary.nvim",
-      "antoinemadec/FixCursorHold.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-  },
-  {
-    "alex-popov-tech/store.nvim",
-    dependencies = {
-      "OXY2DEV/markview.nvim", -- optional, for pretty readme preview / help window
-    },
-    cmd = "Store",
-    keys = {
-      { "<leader>s", "<cmd>Store<cr>", desc = "Open Plugin Store" },
-    },
+    event = "VeryLazy",
     opts = {
-      -- optional configuration here
+      display = { theme = "minecraft" },
     },
   },
+
+  -- Gamification & Flow
   {
-    "hrsh7th/nvim-cmp",
-    -- override the options
-    opts = function(_, opts)
-      local cmp = require "cmp"
-      local luasnip = require "luasnip"
-
-      -- The new, intelligent mapping for the <Tab> key
-      opts.mapping["<Tab>"] = function(fallback)
-        if cmp.visible() then
-          cmp.select_next_item()
-        else
-          fallback()
-        end
-      end
-
-      return opts
+    "m4xshen/hardtime.nvim",
+    dependencies = { "MunifTanjim/nui.nvim" },
+    event = "VeryLazy",
+    opts = { showmode = false, cmdheight = 2 },
+  },
+  {
+    "3rd/time-tracker.nvim",
+    dependencies = { "3rd/sqlite.nvim" },
+    event = "VeryLazy",
+    opts = function()
+      return { data_file = vim.fn.stdpath "data" .. "/time-tracker.db" }
     end,
   },
-  { "meznaric/key-analyzer.nvim", opts = {} },
+
+  -- Additional UI Fixes & Replacements
   {
-    "nvzone/floaterm",
-    dependencies = "nvzone/volt",
+    "romgrk/barbar.nvim",
+    dependencies = { "lewis6991/gitsigns.nvim", "nvim-tree/nvim-web-devicons" },
+    lazy = false,
+    init = function()
+      vim.g.barbar_auto_setup = false
+    end,
     opts = {},
-    cmd = "FloatermToggle",
-  },
-  { "nvzone/menu" , lazy = true },
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
-{'romgrk/barbar.nvim',
-    dependencies = {
-      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
-      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
-    },
-    init = function() vim.g.barbar_auto_setup = false end,
-    opts = {
-      -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
-      -- animation = true,
-      -- insert_at_start = true,
-      -- …etc.
-    },
-    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+    version = "^1.0.0",
   },
   {
-    'isakbm/gitgraph.nvim',
-    opts = {
-      git_cmd = "git",
-      symbols = {
-        merge_commit = 'M',
-        commit = '*',
-      },
-      format = {
-        timestamp = '%H:%M:%S %d-%m-%Y',
-        fields = { 'hash', 'timestamp', 'author', 'branch_name', 'tag' },
-      },
-      hooks = {
-        on_select_commit = function(commit)
-          print('selected commit:', commit.hash)
-        end,
-        on_select_range_commit = function(from, to)
-          print('selected range:', from.hash, to.hash)
-        end,
-      },
-    },
+    "isakbm/gitgraph.nvim",
     keys = {
       {
-        "<leader>gl",
+        "gl",
         function()
-          require('gitgraph').draw({}, { all = true, max_count = 5000 })
+          require("gitgraph").draw({}, { all = true, max_count = 5000 })
         end,
         desc = "GitGraph - Draw",
       },
     },
-  },{
-    "nvzone/showkeys",
-    cmd = "ShowkeysToggle",
     opts = {
-      maxkeys = 5,
-      position = "top-center",
+      git_cmd = "git",
+      symbols = { merge_commit = "M", commit = "*" },
+      format = { timestamp = "%H:%M:%S %d-%m-%Y", fields = { "hash", "timestamp", "author", "branch_name", "tag" } },
     },
+  },
+  {
+    "nvzone/showkeys",
     lazy = false,
-    priority = 1000
+    opts = { maxkeys = 5, position = "top-center" },
+    config = function(_, opts)
+      require("showkeys").setup(opts)
+      vim.schedule(function()
+        vim.cmd "ShowkeysToggle"
+      end)
+    end,
+  },
+  {
+    "tris203/precognition.nvim",
+    lazy = false,
+    opts = {
+      highlightColor = { link = "Precognition" },
+      targetedMotionHighlightColor = { link = "PrecognitionTargeted" },
+    },
+    config = function(_, opts)
+      require("precognition").setup(opts)
+      vim.schedule(function()
+        vim.cmd "Precognition show"
+      end)
+    end,
+  },
+  { "nvzone/menu", lazy = true },
+  {
+    "nvzone/floaterm",
+    cmd = "FloatermToggle",
+    opts = {},
+  },
+  {
+    "meznaric/key-analyzer.nvim",
+    cmd = "KeyAnalyzer",
+    opts = {},
+  },
+
+  -- The Master Theme Configuration
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    lazy = false,
+    config = function()
+      require("catppuccin").setup {
+        flavour = "mocha",
+        background = { light = "latte", dark = "mocha" },
+        transparent_background = false,
+        custom_highlights = function(colors)
+          return {
+            Precognition = { fg = colors.subtext0, style = { "italic" } },
+            PrecognitionTargeted = { fg = colors.surface1, style = { "italic" } },
+          }
+        end,
+        highlight_overrides = {
+          all = function(colors)
+            return {
+              NvimTreeNormal = { fg = colors.none },
+              CmpBorder = { fg = "#3e4145" },
+            }
+          end,
+          mocha = function(mocha)
+            return {
+              Comment = { fg = mocha.mauve },
+            }
+          end,
+        },
+      }
+    end,
+  },
+
+  -- Modern QoL & UI Enhancements
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {},
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    },
+  },
+  {
+    "willothy/nvim-window-picker",
+    name = "window-picker",
+    event = "VeryLazy",
+    version = "2.*",
+    config = function()
+      require("window-picker").setup({
+        filter_rules = {
+          include_current_win = false,
+          autoselect_one = true,
+          bo = {
+            filetype = { "NvimTree", "neo-tree", "notify" },
+            buftype = { "terminal", "quickfix" },
+          },
+        },
+      })
+    end,
+  },
+  {
+    "utilyre/barbecue.nvim",
+    name = "barbecue",
+    version = "*",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons",
+    },
+    event = "VeryLazy",
+    opts = {},
+  },
+  {
+    "karb94/neoscroll.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("neoscroll").setup({})
+    end,
+  },
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    keys = {
+      { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
+  },
+  {
+    "stevearc/dressing.nvim",
+    event = "VeryLazy",
+    opts = {},
+  },
+  {
+    "stevearc/aerial.nvim",
+    event = "VeryLazy",
+    opts = {},
+    keys = {
+      { "<leader>ao", "<cmd>AerialToggle!<cr>", desc = "Toggle Aerial Outline" }
+    }
+  },
+  {
+    "kosayoda/nvim-lightbulb",
+    event = "LspAttach",
+    opts = {
+      autocmd = { enabled = true },
+      sign = { enabled = true },
+      virtual_text = { enabled = true, text = " 💡 " },
+    },
   },
 }
