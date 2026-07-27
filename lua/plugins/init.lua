@@ -109,7 +109,7 @@ return {
         dofile(vim.g.base46_cache .. "treesitter")
       end)
       return {
-        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc", "rust", "toml", "markdown", "markdown_inline" },
+        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc", "rust", "toml", "markdown", "markdown_inline", "latex" },
         auto_install = true,
         rainbow = { enable = true, extended_mode = true },
         highlight = { enable = true, use_languagetree = true },
@@ -251,9 +251,57 @@ return {
     "vyfor/cord.nvim",
     build = ":Cord update",
     event = "VeryLazy",
-    opts = {
-      display = { theme = "minecraft" },
-    },
+    opts = function()
+      -- Session file to persist Discord RPC start timestamp across restarts
+      local session_file = vim.fn.stdpath("data") .. "/cord_session.json"
+      local current_time = os.time()
+      local start_time = current_time
+
+      -- Read saved session timestamp from previous Neovim run
+      local f = io.open(session_file, "r")
+      if f then
+        local content = f:read("*a")
+        f:close()
+        local ok, data = pcall(vim.json.decode, content)
+        if ok and type(data) == "table" and data.exit_time and data.start_time then
+          local gap = current_time - data.exit_time
+          -- Maintain session timer if restart gap is 10 minutes or less (600 seconds)
+          if gap >= 0 and gap <= 600 then
+            start_time = data.start_time
+          end
+        end
+      end
+
+      -- Autocmd to save exit time and session start time on exit
+      vim.api.nvim_create_autocmd("VimLeavePre", {
+        group = vim.api.nvim_create_augroup("CordSessionSaver", { clear = true }),
+        callback = function()
+          local file = io.open(session_file, "w")
+          if file then
+            file:write(vim.json.encode({
+              start_time = start_time,
+              exit_time = os.time(),
+            }))
+            file:close()
+          end
+        end,
+      })
+
+      return {
+        display = { theme = "minecraft" },
+        timestamp = {
+          enabled = true,
+          reset_on_idle = false,
+          reset_on_change = false,
+          shared = false,
+        },
+        hooks = {
+          pre_activity = function(opts)
+            opts.timestamp = start_time
+          end,
+        },
+      }
+    end,
   },
 
   -- Gamification & Flow
@@ -363,11 +411,92 @@ return {
           end,
           mocha = function(mocha)
             return {
-              Comment = { fg = mocha.mauve },
+              Comment = { fg = mocha.overlay2 },
             }
           end,
         },
       }
+    end,
+  },
+
+  -- LaTeX rendering in comments
+  {
+    "jbyuki/nabla.nvim",
+    keys = {
+      { "<leader>p", function() require("nabla").popup() end, desc = "Nabla Popup" },
+      { "<leader>t", function() require("nabla").toggle_virt() end, desc = "Nabla Toggle Virtual Text" },
+    },
+    config = function()
+      -- Monkeypatch nabla.utils.get_all_mathzones to support LaTeX injections in comments
+      local ts = vim.treesitter
+      local nabla_utils = require("nabla.utils")
+      nabla_utils.get_all_mathzones = function(opts)
+        opts = opts or {}
+        local buf = vim.api.nvim_get_current_buf()
+        local ok, parser = pcall(ts.get_parser, buf)
+        if not ok or not parser then
+          return {}
+        end
+
+        local top, bottom = vim.fn.line('w0') - 1, vim.fn.line('w$')
+        local parse_span = { top = top, bottom = bottom }
+
+        local ok_parse, _ = pcall(parser.parse, parser, opts.render_visible and { parse_span.top, parse_span.bottom } or true)
+        if not ok_parse then
+          return {}
+        end
+
+        local out = {}
+        local main_lang = parser:lang()
+
+        if main_lang == "latex" then
+          local root = parser:parse()[1]:root()
+          if root then
+            nabla_utils.get_mathzones_in_node(root, out)
+          end
+        else
+          -- Walk all language trees (injected trees) to find "latex"
+          local injections = {}
+          parser:for_each_tree(function(tree, lang_tree)
+            if lang_tree:lang() == "latex" then
+              local r = tree:root()
+              if r then
+                local sr, sc, er, ec = ts.get_node_range(r)
+                local key = string.format("%s,%s,%s,%s", sr, sc, er, ec)
+                if not injections[key] then
+                  injections[key] = true
+                  table.insert(out, r)
+                end
+              end
+            end
+          end)
+        end
+
+        return out
+      end
+
+      -- Monkeypatch nabla.latex.parse_all to strip the "// LATEX:" comment prefixes
+      local latex_parser = require("nabla.latex")
+      local original_parse_all = latex_parser.parse_all
+      latex_parser.parse_all = function(text)
+        local formula = text:match("LATEX:%s*(.*)")
+        if formula then
+          text = formula:gsub("%s*%*/%s*$", "")
+        end
+        return original_parse_all(text)
+      end
+
+      -- Automatically enable virtual text for scientific/latex comments
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+        pattern = "*",
+        callback = function()
+          if vim.bo.buftype == "" then
+            pcall(function()
+              require("nabla").enable_virt({ autogen = true, silent = true })
+            end)
+          end
+        end,
+      })
     end,
   },
 
@@ -458,4 +587,161 @@ return {
       virtual_text = { enabled = true, text = " 💡 " },
     },
   },
+  {
+    "atiladefreitas/dooing",
+    event = "VeryLazy",
+    cmd = { "Dooing", "DooingLocal", "DooingDue" },
+    keys = {
+      {
+        "<leader>tt",
+        "<cmd>DooingLocal<cr>",
+        desc = "Dooing: Toggle Project Todo List",
+      },
+      {
+        "<leader>tT",
+        "<cmd>Dooing<cr>",
+        desc = "Dooing: Toggle Global Todo List",
+      },
+      {
+        "<leader>ta",
+        function()
+          local input = vim.fn.input("New Project Task: ")
+          if input and #input > 0 then
+            vim.cmd("Dooing add " .. vim.fn.fnameescape(input))
+          end
+        end,
+        desc = "Dooing: Add New Task Directly",
+      },
+      {
+        "<leader>td",
+        "<cmd>DooingDue<cr>",
+        desc = "Dooing: View Due & Overdue Tasks",
+      },
+    },
+    opts = {
+      save_path = vim.fn.stdpath("data") .. "/dooing_todos.json",
+      pretty_print_json = true,
+      timestamp = {
+        enabled = true,
+      },
+      window = {
+        width = 65,
+        height = 20,
+        border = "rounded",
+        zindex = 50,
+        position = "center",
+      },
+      per_project = {
+        enabled = true,
+        default_filename = "dooing.json",
+        auto_gitignore = true,
+        on_missing = "prompt",
+        auto_open_project_todos = false,
+      },
+      keymaps = {
+        toggle_window = "<leader>tt",
+        open_project_todo = "<leader>tt",
+        show_due_notification = "<leader>td",
+      },
+    },
+    config = function(_, opts)
+      local dooing = require("dooing")
+      dooing.setup(opts)
+
+      local mocha = {
+        mauve = "#cba6f7",
+        lavender = "#b4bfe2",
+        pink = "#f5c2e7",
+        red = "#f38ba8",
+        peach = "#fab387",
+        yellow = "#f9e2af",
+        green = "#a6e3a1",
+        text = "#cdd6f4",
+        subtext = "#a6adc8",
+        overlay0 = "#6c7086",
+        surface0 = "#313244",
+        surface1 = "#45475a",
+        mantle = "#181825",
+      }
+
+      local function apply_dooing_highlights()
+        vim.api.nvim_set_hl(0, "DooingBorder", { fg = mocha.mauve, bold = true })
+        vim.api.nvim_set_hl(0, "DooingTitle", { fg = mocha.mauve, bold = true, italic = true })
+        vim.api.nvim_set_hl(0, "DooingHeader", { fg = mocha.lavender, bold = true })
+        vim.api.nvim_set_hl(0, "DooingPending", { fg = mocha.text })
+        vim.api.nvim_set_hl(0, "DooingDone", { fg = mocha.overlay0, strikethrough = true })
+        vim.api.nvim_set_hl(0, "DooingActive", { fg = mocha.mauve, bg = mocha.surface0, bold = true })
+        vim.api.nvim_set_hl(0, "DooingPriorityUrgent", { fg = mocha.red, bold = true })
+        vim.api.nvim_set_hl(0, "DooingPriorityHigh", { fg = mocha.peach, bold = true })
+        vim.api.nvim_set_hl(0, "DooingPriorityMedium", { fg = mocha.yellow })
+        vim.api.nvim_set_hl(0, "DooingPriorityLow", { fg = mocha.green })
+        vim.api.nvim_set_hl(0, "DooingTimestamp", { fg = mocha.subtext, italic = true })
+      end
+
+      apply_dooing_highlights()
+
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        group = vim.api.nvim_create_augroup("DooingCatppuccinTheme", { clear = true }),
+        callback = apply_dooing_highlights,
+      })
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("DooingBufferKeymaps", { clear = true }),
+        pattern = "dooing",
+        callback = function(ev)
+          local opts_buf = { buffer = ev.buf, remap = false, silent = true }
+
+          vim.keymap.set("n", "<space>", function()
+            local line = vim.api.nvim_win_get_cursor(0)[1]
+            vim.cmd(line .. "DooingToggle")
+          end, vim.tbl_extend("force", opts_buf, { desc = "Dooing: Toggle Task Done Status" }))
+
+          vim.keymap.set("n", "x", function()
+            local line = vim.api.nvim_win_get_cursor(0)[1]
+            vim.cmd(line .. "DooingToggle")
+          end, vim.tbl_extend("force", opts_buf, { desc = "Dooing: Toggle Task Done Status" }))
+
+          vim.keymap.set("n", "a", function()
+            local input = vim.fn.input("Add Task: ")
+            if input and #input > 0 then
+              vim.cmd("Dooing add " .. vim.fn.fnameescape(input))
+            end
+          end, vim.tbl_extend("force", opts_buf, { desc = "Dooing: Add New Task" }))
+
+          vim.keymap.set("n", "i", function()
+            local input = vim.fn.input("Add Task: ")
+            if input and #input > 0 then
+              vim.cmd("Dooing add " .. vim.fn.fnameescape(input))
+            end
+          end, vim.tbl_extend("force", opts_buf, { desc = "Dooing: Add New Task" }))
+
+          vim.keymap.set("n", "d", function()
+            local line = vim.api.nvim_win_get_cursor(0)[1]
+            vim.cmd("Dooing delete " .. line)
+          end, vim.tbl_extend("force", opts_buf, { desc = "Dooing: Delete Task Under Cursor" }))
+
+          vim.keymap.set("n", "p", function()
+            local line = vim.api.nvim_win_get_cursor(0)[1]
+            vim.ui.select(
+              { "urgent", "high", "medium", "low", "none" },
+              { prompt = "Select Task Priority Level:" },
+              function(choice)
+                if choice then
+                  if choice == "none" then
+                    vim.cmd("Dooing set " .. line .. " priorities nil")
+                  else
+                    vim.cmd("Dooing set " .. line .. " priorities " .. choice)
+                  end
+                end
+              end
+            )
+          end, vim.tbl_extend("force", opts_buf, { desc = "Dooing: Change Task Priority" }))
+
+          vim.keymap.set("n", "q", "<cmd>close<cr>", vim.tbl_extend("force", opts_buf, { desc = "Dooing: Close Window" }))
+          vim.keymap.set("n", "<Esc>", "<cmd>close<cr>", vim.tbl_extend("force", opts_buf, { desc = "Dooing: Close Window" }))
+        end,
+      })
+    end,
+  },
 }
+
