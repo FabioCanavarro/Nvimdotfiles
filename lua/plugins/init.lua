@@ -300,6 +300,24 @@ return {
             opts.timestamp = start_time
           end,
         },
+        advanced = {
+          discord = {
+            -- Prioritize primary Windows IPC pipe discord-ipc-0
+            pipe_paths = { [[\\.\pipe\discord-ipc-0]], [[\\.\pipe\discord-ipc-1]] },
+            reconnect = {
+              enabled = true,
+              interval = 3000, -- Fast 3s auto-reconnect if hijacked or disconnected
+              initial = true,
+            },
+            sync = {
+              enabled = true,
+              mode = "periodic",
+              interval = 5000, -- Continuously push Neovim status every 5s to override PreMiD
+              reset_on_update = true,
+              pad = false,
+            },
+          },
+        },
       }
     end,
   },
