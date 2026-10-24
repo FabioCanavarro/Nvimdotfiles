@@ -4,6 +4,23 @@ require("nvchad.configs.lspconfig").defaults()
 local lspconfig = require "lspconfig"
 local nvlsp = require "nvchad.configs.lspconfig"
 
+-- Prevent LSP hover and signature help floating windows from taking cursor focus
+local orig_hover = vim.lsp.handlers["textDocument/hover"]
+if orig_hover then
+  vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
+    config = vim.tbl_extend("force", config or {}, { focusable = false })
+    return orig_hover(err, result, ctx, config)
+  end
+end
+
+local orig_sig = vim.lsp.handlers["textDocument/signatureHelp"]
+if orig_sig then
+  vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+    config = vim.tbl_extend("force", config or {}, { focusable = false })
+    return orig_sig(err, result, ctx, config)
+  end
+end
+
 local servers = {
   "html",
   "cssls",
@@ -35,8 +52,9 @@ for _, lsp in ipairs(servers) do
   setup_server(lsp)
 end
 
--- 2. Setup Python (basedpyright) with your custom inlay hints
-setup_server("basedpyright", {
+-- 2. Setup Python (basedpyright or pyright fallback)
+local python_lsp = vim.fn.executable("basedpyright") == 1 and "basedpyright" or "pyright"
+setup_server(python_lsp, {
   settings = {
     basedpyright = {
       analysis = {
@@ -44,6 +62,13 @@ setup_server("basedpyright", {
         inlayHints = {
           callArgumentNames = true,
         },
+      },
+    },
+    python = {
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        diagnosticMode = "openFilesOnly",
       },
     },
   },

@@ -11,6 +11,16 @@ return {
       require "configs.lspconfig"
     end,
   },
+  {
+    "hrsh7th/nvim-cmp",
+    opts = function(_, opts)
+      opts.window = opts.window or {}
+      opts.window.documentation = vim.tbl_extend("force", opts.window.documentation or {}, {
+        focusable = false,
+      })
+      return opts
+    end,
+  },
   { "NvChad/nvterm", enabled = false },
   { "vuciv/golf", cmd = "Golf" },
 
@@ -32,6 +42,7 @@ return {
         { "<leader>w", group = "Window picking" },
         { "<leader>x", group = "Close buffer" },
         { "<leader>a", group = "Aerial outline" },
+        { "<leader>l", group = "LeetCode" },
       })
     end,
   },
@@ -44,6 +55,16 @@ return {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
           ["vim.lsp.util.stylize_markdown"] = true,
           ["cmp.entry.get_documentation"] = false,
+        },
+        hover = {
+          opts = {
+            focusable = false,
+          },
+        },
+        signature = {
+          opts = {
+            focusable = false,
+          },
         },
       },
       presets = {
@@ -109,7 +130,7 @@ return {
         dofile(vim.g.base46_cache .. "treesitter")
       end)
       return {
-        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc", "rust", "toml", "markdown", "markdown_inline", "latex" },
+        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc", "rust", "toml", "markdown", "markdown_inline", "latex", "html" },
         auto_install = true,
         rainbow = { enable = true, extended_mode = true },
         highlight = { enable = true, use_languagetree = true },
@@ -198,6 +219,27 @@ return {
   },
 
   -- Debugging & External Tools
+  {
+    "kawre/leetcode.nvim",
+    build = ":TSUpdate html",
+    cmd = "Leet",
+    lazy = "leetcode.nvim" ~= vim.fn.argv(0, -1),
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "rcarriga/nvim-notify",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      arg = "leetcode.nvim",
+      lang = "rust",
+      cn = {
+        enabled = false,
+      },
+    },
+  },
   {
     "saecki/crates.nvim",
     event = "BufRead Cargo.toml",

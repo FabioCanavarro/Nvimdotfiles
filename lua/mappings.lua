@@ -146,3 +146,16 @@ map('n', '<Leader>bn', '<Cmd>BufferOrderByName<CR>', opts)
 map('n', '<Leader>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
 map('n', '<Leader>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
 map('n', '<Leader>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
+
+-- LeetCode
+map("n", "<Leader>ll", "<cmd>Leet<cr>", { desc = "LeetCode Dashboard" })
+map("n", "<Leader>lr", "<cmd>Leet run<cr>", { desc = "LeetCode Run Solution" })
+map("n", "<Leader>ls", "<cmd>Leet submit<cr>", { desc = "LeetCode Submit Solution" })
+map("n", "<Leader>ld", "<cmd>Leet daily<cr>", { desc = "LeetCode Daily Problem" })
+map("n", "<Leader>lR", "<cmd>Leet random<cr>", { desc = "LeetCode Random Problem" })
+map("n", "<Leader>lt", "<cmd>Leet test<cr>", { desc = "LeetCode Test Case" })
+map("n", "<Leader>lc", "<cmd>Leet console<cr>", { desc = "LeetCode Toggle Console" })
+map("n", "<Leader>lD", "<cmd>Leet desc<cr>", { desc = "LeetCode Toggle Description" })
+map("n", "<Leader>lo", "<cmd>Leet open<cr>", { desc = "LeetCode Open in Browser" })
+map("n", "<Leader>lL", "<cmd>Leet list<cr>", { desc = "LeetCode Problem List" })
+
