@@ -169,7 +169,4 @@ vim.g.rustaceanvim = function()
   }
 end
 
-<<<<<<< HEAD
 vim.opt.linespace = 3
-=======
->>>>>>> 9ed9879dc2fe487f8968c84cba7178395b3e2b0f

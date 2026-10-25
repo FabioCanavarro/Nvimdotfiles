@@ -103,7 +103,20 @@ return {
       end)
 
       return {
-        ensure_installed = { "lua", "luadoc", "printf", "vim", "vimdoc", "rust", "toml" },
+        ensure_installed = {
+          "lua",
+          "luadoc",
+          "printf",
+          "vim",
+          "vimdoc",
+          "c",
+          "cpp",
+          "make",
+          "cmake",
+          "ninja",
+          "rust",
+          "toml",
+        },
         auto_install = true,
         rainbow = {
           enable = true,
@@ -436,6 +449,7 @@ return {
   { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   {
     "romgrk/barbar.nvim",
+    lazy = false,
     dependencies = {
       "lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
       "nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
@@ -558,5 +572,66 @@ return {
     'mrcjkb/haskell-tools.nvim',
     version = '^6', -- Recommended
     lazy = false, -- This plugin is already lazy
-  }
+  },
+  {
+    "p00f/clangd_extensions.nvim",
+    ft = { "c", "cpp" },
+    opts = {
+      inlay_hints = {
+        inline = vim.fn.has "nvim-0.10" == 1,
+        only_current_line = false,
+        only_current_line_autocmd = "CursorHold",
+        show_parameter_hints = true,
+        parameter_hints_prefix = "<- ",
+        other_hints_prefix = "=> ",
+        max_len_align = false,
+        max_len_align_padding = 1,
+        right_align = false,
+        right_align_padding = 7,
+        highlight = "Comment",
+        priority = 100,
+      },
+      ast = {
+        role_icons = {
+          type = "",
+          declaration = "",
+          expression = "",
+          specifier = "",
+          statement = "",
+          ["template argument"] = "",
+        },
+        kind_icons = {
+          Compound = "",
+          Recovery = "",
+          TranslationUnit = "",
+          PackExpansion = "",
+          TemplateTypeParm = "",
+          TemplateTemplateParm = "",
+          TemplateParamObject = "",
+        },
+      },
+    },
+  },
+  {
+    "xeluxee/competitest.nvim",
+    dependencies = "MunifTanjim/nui.nvim",
+    cmd = { "CompetiTest" },
+    opts = {
+      compile_command = {
+        c = { exec = "clang", args = { "-Wall", "-O2", "$(FNAME)", "-o", "$(FNOEXT)" } },
+        cpp = { exec = "clang++", args = { "-Wall", "-O2", "-std=c++20", "$(FNAME)", "-o", "$(FNOEXT)" } },
+        rust = { exec = "rustc", args = { "$(FNAME)" } },
+        python = { exec = "python3", args = { "$(FNAME)" } },
+      },
+      run_command = {
+        c = { exec = "./$(FNOEXT)" },
+        cpp = { exec = "./$(FNOEXT)" },
+        rust = { exec = "./$(FNOEXT)" },
+        python = { exec = "python3", args = { "$(FNAME)" } },
+      },
+      testcases_directory = "./tests",
+      testcases_use_single_file = false,
+      view_output_diff = true,
+    },
+  },
 }

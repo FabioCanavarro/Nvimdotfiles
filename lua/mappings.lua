@@ -159,3 +159,45 @@ map("n", "<Leader>lD", "<cmd>Leet desc<cr>", { desc = "LeetCode Toggle Descripti
 map("n", "<Leader>lo", "<cmd>Leet open<cr>", { desc = "LeetCode Open in Browser" })
 map("n", "<Leader>lL", "<cmd>Leet list<cr>", { desc = "LeetCode Problem List" })
 
+-- Setup Clings & QEMU commands
+pcall(function()
+  require("configs.clings").setup()
+  require("configs.qemu").setup()
+end)
+
+-- C/C++ & Clangd Navigation
+map("n", "<Leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", { desc = "Clangd Switch Source/Header" })
+map("n", "<A-o>", "<cmd>ClangdSwitchSourceHeader<cr>", { desc = "Clangd Switch Source/Header" })
+map("n", "<Leader>cA", "<cmd>ClangdAST<cr>", { desc = "Clangd AST View" })
+map("n", "<Leader>cT", "<cmd>ClangdTypeHierarchy<cr>", { desc = "Clangd Type Hierarchy" })
+map("n", "<Leader>cM", "<cmd>ClangdMemoryUsage<cr>", { desc = "Clangd Memory Usage" })
+map("n", "<Leader>cS", "<cmd>ClangdSymbolInfo<cr>", { desc = "Clangd Symbol Info" })
+
+-- Inlay hints toggle (<leader>th & <leader>pi)
+map("n", "<Leader>th", function()
+  if vim.lsp.inlay_hint then
+    local enabled = not vim.lsp.inlay_hint.is_enabled { bufnr = 0 }
+    vim.lsp.inlay_hint.enable(enabled, { bufnr = 0 })
+    vim.notify("Inlay hints " .. (enabled and "ENABLED" or "DISABLED"), vim.log.levels.INFO)
+  end
+end, { desc = "Toggle Inlay Hints" })
+
+-- Testcase Runner (CompetiTest)
+map("n", "<Leader>tr", "<cmd>CompetiTest run<cr>", { desc = "Test: Run Testcases" })
+map("n", "<Leader>ta", "<cmd>CompetiTest add_testcase<cr>", { desc = "Test: Add Testcase" })
+map("n", "<Leader>te", "<cmd>CompetiTest edit_testcase<cr>", { desc = "Test: Edit Testcase" })
+map("n", "<Leader>td", "<cmd>CompetiTest delete_testcase<cr>", { desc = "Test: Delete Testcase" })
+map("n", "<Leader>tu", "<cmd>CompetiTest show_ui<cr>", { desc = "Test: Toggle UI" })
+
+-- Clings integration (<leader>C...)
+map("n", "<Leader>Cr", "<cmd>ClingsRun<cr>", { desc = "Clings: Run Exercise" })
+map("n", "<Leader>Ch", "<cmd>ClingsHint<cr>", { desc = "Clings: Show Hint" })
+map("n", "<Leader>Cw", "<cmd>ClingsWatch<cr>", { desc = "Clings: Watch Mode" })
+map("n", "<Leader>Cc", "<cmd>ClingsCheck<cr>", { desc = "Clings: Check All" })
+map("n", "<Leader>Cs", "<cmd>ClingsReset<cr>", { desc = "Clings: Reset Exercise" })
+
+-- QEMU integration (<leader>q...)
+map("n", "<Leader>qr", "<cmd>QemuRun<cr>", { desc = "QEMU: Run (make qemu)" })
+map("n", "<Leader>qg", "<cmd>QemuGdb<cr>", { desc = "QEMU: Debug (make qemu-gdb)" })
+map("n", "<Leader>qk", "<cmd>QemuStop<cr>", { desc = "QEMU: Stop active instances" })
+

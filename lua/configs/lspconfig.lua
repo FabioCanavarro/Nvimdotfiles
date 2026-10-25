@@ -21,10 +21,9 @@ if orig_sig then
   end
 end
 
-local servers = {
+local standard_servers = {
   "html",
   "cssls",
-  "clangd",
   "arduino_language_server",
 }
 
@@ -38,8 +37,8 @@ local function setup_server(server_name, custom_opts)
   }, custom_opts or {})
 
   if vim.fn.has "nvim-0.11" == 1 then
-    -- Native Neovim 0.11+ API (Bypasses the deprecation warning)
-    vim.lsp.config[server_name] = opts
+    -- Native Neovim 0.11+ API (Merges with default config)
+    vim.lsp.config(server_name, opts)
     vim.lsp.enable(server_name)
   else
     -- Fallback for Neovim 0.10 and older
@@ -47,12 +46,66 @@ local function setup_server(server_name, custom_opts)
   end
 end
 
--- 1. Setup the standard web and C++ servers
-for _, lsp in ipairs(servers) do
+-- 1. Setup standard servers
+for _, lsp in ipairs(standard_servers) do
   setup_server(lsp)
 end
 
--- 2. Setup Python (basedpyright or pyright fallback)
+-- 2. Setup Clangd for C and C++
+local clangd_capabilities = vim.tbl_deep_extend("force", nvlsp.capabilities, {
+  offsetEncoding = { "utf-16" },
+})
+
+setup_server("clangd", {
+  cmd = {
+    "clangd",
+    "--background-index",
+    "--clang-tidy",
+    "--header-insertion=iwyu",
+    "--completion-style=detailed",
+    "--function-arg-placeholders",
+    "--fallback-style=llvm",
+  },
+  capabilities = clangd_capabilities,
+  init_options = {
+    usePlaceholders = true,
+    completeUnimported = true,
+    clangdFileStatus = true,
+  },
+  on_attach = function(client, bufnr)
+    nvlsp.on_attach(client, bufnr)
+    -- Enable inlay hints by default for C/C++ buffers
+    if vim.lsp.inlay_hint then
+      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+    end
+  end,
+})
+
+-- Fallback source/header switcher command in case clangd_extensions is not active
+if vim.fn.exists ":ClangdSwitchSourceHeader" ~= 2 then
+  vim.api.nvim_create_user_command("ClangdSwitchSourceHeader", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local client = vim.lsp.get_clients({ bufnr = bufnr, name = "clangd" })[1]
+    if not client then
+      vim.notify("clangd LSP is not attached to this buffer", vim.log.levels.WARN)
+      return
+    end
+    local params = { uri = vim.uri_from_bufnr(bufnr) }
+    client:request("textDocument/switchSourceHeader", params, function(err, result)
+      if err then
+        vim.notify("Error switching source/header: " .. tostring(err), vim.log.levels.ERROR)
+        return
+      end
+      if not result or result == "" then
+        vim.notify("Corresponding header/source file not found", vim.log.levels.WARN)
+        return
+      end
+      vim.cmd.edit(vim.uri_to_fname(result))
+    end, bufnr)
+  end, { desc = "Switch between C/C++ source and header file" })
+end
+
+-- 3. Setup Python (basedpyright or pyright fallback)
 local python_lsp = vim.fn.executable("basedpyright") == 1 and "basedpyright" or "pyright"
 setup_server(python_lsp, {
   settings = {
