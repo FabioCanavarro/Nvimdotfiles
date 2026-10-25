@@ -1,15 +1,26 @@
+-- STREAMING_CHUNK: Conform formatter configuration
 local options = {
   formatters_by_ft = {
     lua = { "stylua" },
-    -- css = { "prettier" },
-    -- html = { "prettier" },
+    -- Using ruff for Python since you installed it in Mason
+    python = { "ruff_format" },
+    -- Standard web formatters
+    css = { "prettier" },
+    html = { "prettier" },
+    javascript = { "prettier" },
+    typescript = { "prettier" },
+    -- C/C++ formatting via clang-format
+    c = { "clang-format" },
+    cpp = { "clang-format" },
+    -- Rust is usually handled by rust-analyzer/rustaceanvim, but just in case
+    rust = { "rustfmt" },
   },
 
-  -- format_on_save = {
-  --   -- These options will be passed to conform.format()
-  --   timeout_ms = 500,
-  --   lsp_fallback = true,
-  -- },
+  -- Uncomment this block if you want it to format every time you save a file
+  format_on_save = {
+    timeout_ms = 1000,
+    lsp_fallback = true,
+  },
 }
 
 return options

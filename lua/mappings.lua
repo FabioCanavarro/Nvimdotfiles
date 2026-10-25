@@ -89,6 +89,32 @@ vim.keymap.set("n", "<Leader>dC", function()
 end, { desc = "Continue (Rerun) Last Debug" })
 vim.keymap.set("n", "<Leader>tt", "<cmd>Telescope themes<cr>", { desc = "Toggle theme" })
 
+map("n", "<Leader>wp", function()
+  local picked_window_id = require("window-picker").pick_window()
+  if picked_window_id then
+    vim.api.nvim_set_current_win(picked_window_id)
+  end
+end, { desc = "Pick window" })
+
+map("n", "<Leader>wf", function()
+  -- Find the first focusable floating window and jump to it
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local config = vim.api.nvim_win_get_config(win)
+    if config.relative ~= "" and config.focusable then
+      vim.api.nvim_set_current_win(win)
+      return
+    end
+  end
+end, { desc = "Focus floating window" })
+
+-- LSP Code / Action Namespace
+map({ "n", "v" }, "<Leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
+map("n", "<Leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+map("n", "<Leader>cr", vim.lsp.buf.rename, { desc = "Rename symbol" })
+map("n", "<Leader>cf", function()
+  require("conform").format({ lsp_fallback = true })
+end, { desc = "Format document" })
+
 local opts = { noremap = true, silent = true }
 
 map('n', '<A-,>', '<Cmd>BufferPrevious<CR>', opts)
@@ -120,3 +146,16 @@ map('n', '<Leader>bn', '<Cmd>BufferOrderByName<CR>', opts)
 map('n', '<Leader>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
 map('n', '<Leader>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
 map('n', '<Leader>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
+
+-- LeetCode
+map("n", "<Leader>ll", "<cmd>Leet<cr>", { desc = "LeetCode Dashboard" })
+map("n", "<Leader>lr", "<cmd>Leet run<cr>", { desc = "LeetCode Run Solution" })
+map("n", "<Leader>ls", "<cmd>Leet submit<cr>", { desc = "LeetCode Submit Solution" })
+map("n", "<Leader>ld", "<cmd>Leet daily<cr>", { desc = "LeetCode Daily Problem" })
+map("n", "<Leader>lR", "<cmd>Leet random<cr>", { desc = "LeetCode Random Problem" })
+map("n", "<Leader>lt", "<cmd>Leet test<cr>", { desc = "LeetCode Test Case" })
+map("n", "<Leader>lc", "<cmd>Leet console<cr>", { desc = "LeetCode Toggle Console" })
+map("n", "<Leader>lD", "<cmd>Leet desc<cr>", { desc = "LeetCode Toggle Description" })
+map("n", "<Leader>lo", "<cmd>Leet open<cr>", { desc = "LeetCode Open in Browser" })
+map("n", "<Leader>lL", "<cmd>Leet list<cr>", { desc = "LeetCode Problem List" })
+
